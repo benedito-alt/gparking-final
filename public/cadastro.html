@@ -52,9 +52,9 @@
 
             <div class="input-group">
                  <select id="faculdade" required style="width: 100%; padding: 10px; border-radius: 5px;">
-                 <option value="" disabled selected>Selecione Sua Instituição</option>
-                  </select>
-                </div>
+                    <option value="" disabled selected>Carregando instituições...</option>
+                 </select>
+            </div>
 
             <div class="input-group">
               <select id="tipoUsuario" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Poppins'; color: #666;">
@@ -79,81 +79,88 @@
     </div>
 
     <script>
-      // Configuração do Supabase
-const supabaseUrl = 'https://ejxkclftrgqmcckbezmv.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqeGtjbGZ0cmdxbWNja2Jlem12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjExMTQsImV4cCI6MjA5MTMzNzExNH0.CW7JJlPv0OuphV_smL7vhP_oiHP3GoqN78sHXaur2vw';
-const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+      // Configuração CORRETA do Supabase (Projeto csaqfeiv...)
+      const supabaseUrl = 'https://csaqfeivvtmtjlnwuxql.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
+      const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// --- NOVO: Função para carregar faculdades no Select ---
-async function popularFaculdades() {
-  const { data, error } = await _supabase.from('faculdades').select('id, nome');
-  if (data) {
-    const select = document.getElementById('faculdade');
-    select.innerHTML = '<option value="" disabled selected>Selecione sua faculdade</option>';
-    data.forEach(f => {
-      select.add(new Option(f.nome, f.id));
-    });
-  }
-}
-// Chama a função assim que a página carrega
-document.addEventListener('DOMContentLoaded', popularFaculdades);
+      // Função para carregar as faculdades cadastradas no banco
+      async function popularFaculdades() {
+        try {
+          // Buscando na tabela 'faculdade' (singular)
+          const { data, error } = await _supabase.from('faculdade').select('id, nome');
+          
+          if (error) throw error;
 
-// Redireciona para a tela de login ao clicar na aba 
-document.getElementById("tabLogin").addEventListener("click", function () {
-  window.location.href = "../index.html";
-});
-
-document.getElementById("cadastroForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
-  
-  const nome = document.getElementById("nome").value;
-  const email = document.getElementById("email").value.trim();
-  const senha = document.getElementById("senha").value;
-  const telefone = document.getElementById("telefone").value;
-  const tipoUsuario = document.getElementById("tipoUsuario").value;
-  const faculdadeId = document.getElementById("faculdade").value; // PEGA O ID DA FACULDADE
-  const confirmaSenha = document.getElementById("confirmaSenha").value;
-
-  if (senha !== confirmaSenha) {
-    alert("As senhas não coincidem!");
-    return;
-  }
-
-  if (!faculdadeId) {
-    alert("Por favor, selecione uma instituição!");
-    return;
-  }
-
-  try {
-    const { data: authData, error: authError } = await _supabase.auth.signUp({
-      email: email,
-      password: senha,
-    });
-
-    if (authError) throw authError;
-
-    if (authData.user) {
-      // INSERE OS DADOS INCLUINDO A FACULDADE
-      const { error: dbError } = await _supabase
-        .from('usuarios')
-        .insert([
-          { 
-            id: authData.user.id, 
-            nome: nome, 
-            telefone: telefone, 
-            tipo_usuario: tipoUsuario,
-            faculdade_id: faculdadeId // SALVA O VÍNCULO AQUI
+          if (data) {
+            const select = document.getElementById('faculdade');
+            select.innerHTML = '<option value="" disabled selected>Selecione sua faculdade</option>';
+            data.forEach(f => {
+              select.add(new Option(f.nome, f.id));
+            });
           }
-        ]);
+        } catch (err) {
+          console.error("Erro ao carregar faculdades:", err);
+          document.getElementById('faculdade').innerHTML = '<option value="">Erro ao carregar</option>';
+        }
+      }
 
-      if (dbError) throw dbError;
-      window.location.href = "./sucesso.html";
-    }
-  } catch (error) {
-    console.error("Erro no cadastro:", error);
-    alert("Erro ao cadastrar: " + error.message);
-  }
-});
+      // Inicia a busca assim que a página abre
+      document.addEventListener('DOMContentLoaded', popularFaculdades);
+
+      // Aba Login
+      document.getElementById("tabLogin").addEventListener("click", function () {
+        window.location.href = "../index.html";
+      });
+
+      // Lógica de envio do Cadastro
+      document.getElementById("cadastroForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        
+        const nome = document.getElementById("nome").value;
+        const email = document.getElementById("email").value.trim();
+        const senha = document.getElementById("senha").value;
+        const telefone = document.getElementById("telefone").value;
+        const tipoUsuario = document.getElementById("tipoUsuario").value;
+        const faculdadeId = document.getElementById("faculdade").value;
+        const confirmaSenha = document.getElementById("confirmaSenha").value;
+
+        if (senha !== confirmaSenha) {
+          alert("As senhas não coincidem!");
+          return;
+        }
+
+        try {
+          // 1. Cria o usuário no Auth
+          const { data: authData, error: authError } = await _supabase.auth.signUp({
+            email: email,
+            password: senha,
+          });
+
+          if (authError) throw authError;
+
+          if (authData.user) {
+            // 2. Insere os dados adicionais na tabela 'usuarios'
+            const { error: dbError } = await _supabase
+              .from('usuarios')
+              .insert([
+                { 
+                  id: authData.user.id, 
+                  nome: nome, 
+                  telefone: telefone, 
+                  tipo_usuario: tipoUsuario,
+                  faculdade_id: faculdadeId 
+                }
+              ]);
+
+            if (dbError) throw dbError;
+            window.location.href = "./sucesso.html";
+          }
+        } catch (error) {
+          console.error("Erro no cadastro:", error);
+          alert("Erro ao cadastrar: " + error.message);
+        }
+      });
     </script>
   </body>
 </html>
