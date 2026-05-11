@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gparking - Cadastro Realizado</title>
+    <link rel="shortcut icon" href="img/Logo.png">
+    <link rel="stylesheet" href="css/cadastro.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .welcome-text {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #4a148c;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+        .sub-text {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .btn-sucesso {
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+            background: #4a148c; /* Roxo padrão do site */
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        .btn-sucesso:hover {
+            background: #3b0f70;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <div class="overlay">
+                <div class="logo-text-container">
+                    <div class="logo">
+                        <div class="icon"><img src="img/Logo.png" alt="Logo Gparking" /></div>
+                    </div>
+                    <h1>Gparking, Sua vaga no momento certo!!</h1>
+                </div>
+                <div class="image-container">
+                    <img src="img/gparking.png" alt="Carro sobre smartphone" />
+                </div>
+            </div>
+        </div>
+
+        <div class="right">
+            <div class="form-container" style="text-align: center;">
+                <div class="icon-top">
+                    <img src="img/logoNome.png" alt="Nome Gparking" />
+                </div>
+                
+                <h2 class="welcome-text">
+                    <span id="userName">Usuário</span>, agora é só entrar na sua conta! ;)
+                </h2>
+                
+                <p class="sub-text">
+                    Acesse com seu e-mail e senha e Estacione!
+                </p>
+
+                <a href="../index.htmll" class="btn-sucesso">Entrar na conta</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pega o nome que passamos pela URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const nome = urlParams.get('nome');
+        if (nome) {
+            document.getElementById('userName').textContent = nome;
+        }
+    </script>
+</body>
+</html>

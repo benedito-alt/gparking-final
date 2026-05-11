@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gparking - Seleção de Setor</title>
+    <link rel="shortcut icon" href="img/Logo.png">
+    <link rel="stylesheet" href="css/setores.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  </head>
+  <body>
+    <main class="selection-card">
+      <section class="info-panel">
+        <a href="home.html" class="arrow" title="Voltar para Home"><i class="fa-solid fa-arrow-left"></i></a>
+        
+        <div class="logo-mini" style="margin-bottom: 20px;">
+          <img src="img/Logo.png" alt="Logo Gparking" style="width: 50px;"/>
+        </div>
+
+        <h2>Verifique o setor mais livre e economize tempo ao estacionar.</h2>
+
+        <img src="img/Carro.png" class="info-image" alt="Carro Gparking" />
+      </section>
+
+      <section class="selection-panel">
+  <h3>Vagas em Tempo Real</h3>
+
+  <div class="sector-grid">
+    <div class="sector-option" data-sector="A">
+      <div class="sector-letter" style="--sector-color: #8e44ad">A</div>
+      <strong>Setor A</strong>
+      <p><span id="vagasA">150</span> vagas disponíveis</p>
+      <span class="pcd-vagas"><i class="fa-solid fa-wheelchair"></i> 8 vagas PCD</span>
+
+    <div class="sector-info-overlay">
+        <h4>Detalhes do Setor</h4>
+        <ul>
+            <li><i class="fa-solid fa-location-dot"></i> Ponto de desembarque</li>
+            <li><i class="fa-solid fa-wheelchair"></i>Vagas Preferenciais</li>
+            <li><i class="fa-solid fa-walking"></i> Próximo a portaria</li>
+        </ul>
+    </div>
+    </div>
+    
+    <div class="sector-option" data-sector="B">
+      <div class="sector-letter" style="--sector-color: #2980b9">B</div>
+      <strong>Setor B</strong>
+      <p><span id="vagasB">95</span> vagas disponíveis</p>
+
+      <div class="sector-info-overlay">
+        <h4>Detalhes do Setor</h4>
+        <ul>
+            <li><i class="fa-solid fa-plug-circle-bolt"></i> Possui 2 pontos de recarga elétrica</li>
+            <li><i class="fa-solid fa-arrows-rotate"></i> Alta Rotatividade</li>
+        </ul>
+    </div>
+    </div>
+
+    <div class="sector-option" data-sector="C">
+      <div class="sector-letter" style="--sector-color: #c0392b">C</div>
+      <strong>Setor C</strong>
+      <p><span id="vagasC">260</span> vagas disponíveis</p>
+
+      <div class="sector-info-overlay">
+        <h4>Detalhes do Setor</h4>
+        <ul>
+            <li><i class="fa-solid fa-motorcycle"></i> Vagas disponíveis para motos</li>
+            <li><i class="fa-solid fa-check-double"></i> Maior Disponibilidade de vagas</li>
+        </ul>
+    </div>
+    </div>
+
+    <div class="sector-option" data-sector="D">
+      <div class="sector-letter" style="--sector-color: #d35400">D</div>
+      <strong>Setor D</strong>
+      <p><span id="vagasD">100</span> vagas disponíveis</p>
+
+      <div class="sector-info-overlay">
+        <h4>Detalhes do Setor</h4>
+        <ul>
+            <li><i class="fa-solid fa-id-card-clip"></i> Exclusivo para Colaboradores</li>
+            <li><i class="fa-solid fa-door-open"></i> Acesso direto aos Blocos</li>
+        </ul>
+    </div>
+    </div>
+  </div>
+<div class="legenda-container">
+  <div class="legenda-item">
+    <span class="dot verde"></span>
+    <span>Livre</span>
+  </div>
+  <div class="legenda-item">
+    <span class="dot amarelo"></span>
+    <span>Moderado</span>
+  </div>
+  <div class="legenda-item">
+    <span class="dot vermelho"></span>
+    <span>Lotado</span>
+  </div>
+</div>
+  </section>
+    </main>
+
+    <script>
+      function mostrarAviso(mensagem, tipo = "erro") {
+    Toastify({
+        text: mensagem,
+        duration: 3000, // 3 segundos
+        close: true,
+        gravity: "top", // top ou bottom
+        position: "right", // left, center ou right
+        stopOnFocus: true, // Impede de fechar ao passar o mouse
+        style: {
+            background: tipo === "erro" ? "#e74c3c" : "#4a148c", // Vermelho para erro, Roxo para sucesso
+            borderRadius: "8px",
+            fontWeight: "500",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+        },
+    }).showToast();
+}
+  const tipoUsuario = localStorage.getItem("tipoUsuario") || "Aluno";
+
+  // 1. Definição das capacidades e vagas atuais
+  const statusSetores = [
+    { id: "vagasA", atual: 50, max: 150, letra: "A" },
+    { id: "vagasB", atual: 30,  max: 95, letra: "B" },
+    { id: "vagasC", atual: 98, max: 260, letra: "C" },
+    { id: "vagasD", atual: 10,  max: 100, letra: "D" } // Teste com poucas vagas
+  ];
+
+  // 2. Lógica de Cores Dinâmicas
+  statusSetores.forEach(setor => {
+    const elementoVagas = document.getElementById(setor.id);
+    const card = elementoVagas.closest('.sector-option');
+    
+    if (elementoVagas) {
+      elementoVagas.textContent = setor.atual;
+      const porcentagem = (setor.atual / setor.max) * 100;
+
+      // Aplicar cores conforme a regra
+      if (porcentagem > 50) {
+        elementoVagas.style.color = "#27ae60"; // Verde (Muitas)
+        elementoVagas.style.fontWeight = "bold";
+      } else if (porcentagem <= 50 && porcentagem > 15) {
+        elementoVagas.style.color = "#f1c40f"; // Amarelo (Metade ou menos)
+        elementoVagas.style.fontWeight = "bold";
+      } else {
+        elementoVagas.style.color = "#e74c3c"; // Vermelho (Poucas)
+        elementoVagas.style.fontWeight = "bold";
+      }
+    }
+
+    // 3. Bloqueio do Setor D para Alunos
+    if (setor.letra === "D" && tipoUsuario === "Aluno") {
+      card.classList.add("blocked");
+      card.style.opacity = "0.5";
+      card.style.cursor = "not-allowed";
+      card.title = "Exclusivo para Professores/Colaboradores";
+    }
+  });
+
+  // 4. Remover interação de clique (já que agora é apenas visualização)
+  document.querySelectorAll(".sector-option").forEach(card => {
+    card.addEventListener("click", (e) => {
+        const setorLetra = card.getAttribute("data-sector");
+        if (setorLetra === "D" && tipoUsuario === "Aluno") {
+            alert("⚠️ Acesso Negado: O Setor D é exclusivo para Professores e Colaboradores.");
+        }
+    });
+  });
+</script>
+  </body>
+</html>

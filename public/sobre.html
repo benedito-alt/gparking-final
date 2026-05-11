@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sobre Nós - Gparking</title>
+    <link rel="shortcut icon" href="img/Logo.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/sobre.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <div class="logo-icon">
+          <img src="img/Logo.png" alt="Logo Gparking" />
+        </div>
+        <div class="logo-text">Gparking</div>
+      </div>
+
+      <nav>
+        <div class="menu-toggle" id="menuToggle">
+          <i class="fas fa-bars"></i>
+        </div>
+        <ul id="navMenu">
+          <li><a href="home.html">Home</a></li>
+          <li><a href="setores.html">Setores</a></li>
+          <li><a href="servicos.html">Serviços</a></li>
+          <li><a href="#" class="active">Sobre nós</a></li>
+          <li class="mobile-only"><a href="index.html">Entrar</a></li>
+          <li class="mobile-only"><a href="cadastro.html">Criar conta</a></li>
+          
+          <li class="mobile-only user-menu-item" style="display: none">
+            <a href="#" class="user-profile-mobile" id="openProfileMobile">
+              <img src="img/fotomidia.jpeg" alt="Perfil" class="user-avatar-small" />
+              <span class="user-name"></span>
+            </a>
+          </li>
+          <li class="mobile-only user-menu-item" style="display: none">
+            <a href="#" id="logoutMobile">Sair</a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="header-buttons" id="headerButtons">
+        <button class="header-btn login-btn" onclick="window.location.href='index.html'">Entrar</button>
+        <button class="header-btn register-btn" onclick="window.location.href='cadastro.html'">Criar conta</button>
+
+        <div class="user-profile" id="userProfile" style="display: none">
+          <div class="user-info">
+            <img src="img/fotomidia.jpeg" alt="Foto de perfil" class="user-avatar" />
+            <span class="user-name"></span>
+          </div>
+          <div class="user-dropdown">
+            <a href="#" id="openProfileDropdown">Meu Perfil</a>
+            <a href="#" id="logoutBtn">Sair</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="about-hero">
+        <div class="about-hero-content">
+          <h1>Sobre Nós</h1>
+          <p>
+            Entenda quem somos e como o Gparking transforma a experiência de
+            estacionamento no Senai Cimatec, tornando o processo mais rápido,
+            organizado e acessível para toda a comunidade acadêmica.
+          </p>
+          <a href="#nossa-historia" class="action-btn">
+            Conheça Nossa História
+            <i class="fas fa-arrow-down"></i>
+          </a>
+        </div>
+        <div class="about-hero-image">
+          <img src="img/Group 1.png" alt="Sistema Gparking" />
+        </div>
+      </section>
+
+      <section class="about-section">
+        <div class="mv-cards">
+          <div class="mv-card">
+            <i class="fas fa-bullseye"></i>
+            <h3>Nossa Missão</h3>
+            <p>
+              Proporcionar uma solução eficiente e inovadora para o gerenciamento
+              de vagas de estacionamento no Senai Cimatec, facilitando o acesso e
+              promovendo a sustentabilidade.
+            </p>
+          </div>
+
+          <div class="mv-card">
+            <i class="fas fa-eye"></i>
+            <h3>Nossa Visão</h3>
+            <p>
+              Ser reconhecido como o sistema líder em gestão de estacionamento
+              inteligente, contribuindo para a melhoria da mobilidade urbana e a
+              qualidade de vida da comunidade acadêmica.
+            </p>
+          </div>
+
+          <div class="mv-card">
+            <i class="fas fa-heart"></i>
+            <h3>Nossos Valores</h3>
+            <p>
+              Guiamos nossas ações por princípios sólidos que garantem a
+              excelência em nossos serviços e o compromisso com nossos usuários.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-section" id="nossa-historia">
+        <div class="about-grid">
+          <div class="about-content">
+            <div>
+              <h2>Quem Somos?</h2>
+              <p>
+                O Gparking surgiu com a necessidade de melhorar a experiência de
+                alunos, professores e colaboradores ao estacionar no campus. Nosso
+                objetivo é tornar o processo mais rápido, organizado e acessível,
+                ajudando você a encontrar vagas de maneira descomplicada.
+              </p>
+            </div>
+
+            <div>
+              <h2>Nossos Valores</h2>
+              <ul class="values-list">
+                <li>
+                  <i class="fas fa-lightbulb"></i>
+                  <span><strong>Inovação:</strong> Buscamos sempre as melhores soluções tecnológicas</span>
+                </li>
+                <li>
+                  <i class="fas fa-bolt"></i>
+                  <span><strong>Eficiência:</strong> Otimizamos processos para melhor experiência</span>
+                </li>
+                <li>
+                  <i class="fas fa-leaf"></i>
+                  <span><strong>Sustentabilidade:</strong> Promovemos práticas eco-friendly</span>
+                </li>
+                <li>
+                  <i class="fas fa-users"></i>
+                  <span><strong>Compromisso:</strong> Colocamos o usuário em primeiro lugar</span>
+                </li>
+                <li>
+                  <i class="fas fa-shield-alt"></i>
+                  <span><strong>Transparência:</strong> Agimos com clareza e honestidade</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="about-image">
+            <img src="img/Logo2.jpg" alt="Sobre Gparking" />
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Sobre o Gparking</h3>
+          <p>
+            O sistema inteligente de estacionamento que revoluciona a forma como
+            você gerencia e controla vagas no Senai Cimatec.
+          </p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-section">
+          <h3>Links Rápidos</h3>
+          <ul class="footer-links">
+            <li><a href="home.html">Home</a></li>
+            <li><a href="setores.html">Setores</a></li>
+            <li><a href="servicos.html">Serviços</a></li>
+            <li><a href="#">Sobre Nós</a></li>
+            <li><a href="#">Contato</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Contato</h3>
+          <p><i class="fas fa-map-marker-alt"></i> Senai Cimatec, Salvador - BA</p>
+          <p><i class="fas fa-phone"></i> (71) 99999-9999</p>
+          <p><i class="fas fa-envelope"></i> contato@gparking.com</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 Gparking. Todos os direitos reservados.</p>
+      </div>
+    </footer>
+
+    <div id="profileModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Meu Perfil</h2>
+      <span class="close-modal">&times;</span>
+    </div>
+    
+    <div class="modal-body">
+      <div class="profile-info">
+        <div class="profile-avatar">
+          <img src="img/fotomidia.jpeg" alt="Foto de perfil" id="modalAvatar">
+          <button class="change-avatar-btn" id="btnMudarFoto">Alterar Foto</button>
+          <input type="file" id="inputFoto" accept="image/*" style="display: none;">
+        </div>
+        
+        <div class="profile-details">
+          <div class="info-group">
+            <label>Nome:</label>
+            <span id="modalUserName"></span>
+          </div>
+          <div class="info-group">
+            <label>E-mail:</label>
+            <span id="modalUserEmail"></span>
+          </div>
+          <div class="info-group">
+            <label>Telefone:</label>
+            <span id="modalUserPhone"></span>
+          </div>
+          <div class="info-group">
+            <label>Tipo de Usuário:</label>
+            <span id="modalUserType"></span>
+          </div>
+        </div>
+      </div>
+
+      <div id="mainProfileActions" class="profile-actions" style="display: flex; gap: 10px; flex-direction: column; margin-top: 20px;">
+        <button class="btn edit-profile-btn" style="background: #4a148c; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">Editar Perfil</button>
+        <button class="btn change-password-btn" id="btnAbrirTrocaSenha" style="background: #4a148c; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">Alterar Senha</button>
+      </div>
+
+      <div id="passwordChangeArea" style="display: none; margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px;">
+        <div class="info-group">
+          <label>Nova Senha:</label>
+          <input type="password" id="newPasswordInput" placeholder="Digite a nova senha" style="width: 100%; padding: 8px; margin-top: 5px;">
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button id="btnSalvarSenha" style="flex: 1; background: #27ae60; color: white; padding: 10px; border: none; border-radius: 5px;">Confirmar</button>
+          <button id="btnCancelarSenha" style="flex: 1; background: #c0392b; color: white; padding: 10px; border: none; border-radius: 5px;">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <script src="js/home.js"></script>
+  </body>
+</html>

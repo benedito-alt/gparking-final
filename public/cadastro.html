@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gparking - Cadastro</title>
+    <link rel="shortcut icon" href="img/Logo.png">
+    <link rel="stylesheet" href="css/cadastro.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="left">
+        <div class="overlay">
+          <div class="logo-text-container">
+            <div class="logo">
+              <div class="icon">
+                <img src="img/Logo.png" alt="Logo Gparking" />
+              </div>
+            </div>
+            <h1>Gparking, Sua vaga no momento certo!!</h1>
+          </div>
+          <div class="image-container">
+            <img src="img/gparking.png" alt="Carro sobre smartphone" />
+          </div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="form-container">
+          <div class="icon-top">
+            <a href="home.html"><img src="img/logoNome.png" alt="Nome Gparking" /></a>
+          </div>
+          <h2><span>Seja Bem-Vindo!</span></h2>
+
+          <div class="tabs">
+            <button class="tab inactive" id="tabLogin">Entre agora</button>
+            <button class="tab active">Cadastre-se</button>
+          </div>
+
+          <form id="cadastroForm">
+            <div class="input-group">
+              <input type="text" id="nome" placeholder="Nome" required />
+            </div>
+            <div class="input-group">
+              <input type="email" id="email" placeholder="E-mail" required />
+            </div>
+            <div class="input-group">
+              <input type="tel" id="telefone" placeholder="Telefone" required />
+            </div>
+
+            <div class="input-group">
+                 <select id="faculdade" required style="width: 100%; padding: 10px; border-radius: 5px;">
+                 <option value="" disabled selected>Selecione Sua Instituição</option>
+                  </select>
+                </div>
+
+            <div class="input-group">
+              <select id="tipoUsuario" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Poppins'; color: #666;">
+                <option value="" disabled selected>Selecione seu vínculo</option>
+                <option value="Aluno">Aluno</option>
+                <option value="Colaborador">Colaborador</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <input type="password" id="senha" placeholder="Senha" required />
+            </div>
+            <div class="input-group">
+              <input type="password" id="confirmaSenha" placeholder="Confirme a senha" required />
+            </div>
+            <button type="submit" class="btn">Cadastrar</button>
+          </form>
+
+          <p class="login-text">Já tem cadastro? <a href="../index.html">Entre agora</a></p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Configuração do Supabase
+const supabaseUrl = 'https://ejxkclftrgqmcckbezmv.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqeGtjbGZ0cmdxbWNja2Jlem12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjExMTQsImV4cCI6MjA5MTMzNzExNH0.CW7JJlPv0OuphV_smL7vhP_oiHP3GoqN78sHXaur2vw';
+const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+// --- NOVO: Função para carregar faculdades no Select ---
+async function popularFaculdades() {
+  const { data, error } = await _supabase.from('faculdades').select('id, nome');
+  if (data) {
+    const select = document.getElementById('faculdade');
+    select.innerHTML = '<option value="" disabled selected>Selecione sua faculdade</option>';
+    data.forEach(f => {
+      select.add(new Option(f.nome, f.id));
+    });
+  }
+}
+// Chama a função assim que a página carrega
+document.addEventListener('DOMContentLoaded', popularFaculdades);
+
+// Redireciona para a tela de login ao clicar na aba 
+document.getElementById("tabLogin").addEventListener("click", function () {
+  window.location.href = "../index.html";
+});
+
+document.getElementById("cadastroForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  
+  const nome = document.getElementById("nome").value;
+  const email = document.getElementById("email").value.trim();
+  const senha = document.getElementById("senha").value;
+  const telefone = document.getElementById("telefone").value;
+  const tipoUsuario = document.getElementById("tipoUsuario").value;
+  const faculdadeId = document.getElementById("faculdade").value; // PEGA O ID DA FACULDADE
+  const confirmaSenha = document.getElementById("confirmaSenha").value;
+
+  if (senha !== confirmaSenha) {
+    alert("As senhas não coincidem!");
+    return;
+  }
+
+  if (!faculdadeId) {
+    alert("Por favor, selecione uma instituição!");
+    return;
+  }
+
+  try {
+    const { data: authData, error: authError } = await _supabase.auth.signUp({
+      email: email,
+      password: senha,
+    });
+
+    if (authError) throw authError;
+
+    if (authData.user) {
+      // INSERE OS DADOS INCLUINDO A FACULDADE
+      const { error: dbError } = await _supabase
+        .from('usuarios')
+        .insert([
+          { 
+            id: authData.user.id, 
+            nome: nome, 
+            telefone: telefone, 
+            tipo_usuario: tipoUsuario,
+            faculdade_id: faculdadeId // SALVA O VÍNCULO AQUI
+          }
+        ]);
+
+      if (dbError) throw dbError;
+      window.location.href = "./sucesso.html";
+    }
+  } catch (error) {
+    console.error("Erro no cadastro:", error);
+    alert("Erro ao cadastrar: " + error.message);
+  }
+});
+    </script>
+  </body>
+</html>

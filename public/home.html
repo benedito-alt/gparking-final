@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gparking - Sistema Inteligente de Estacionamento</title>
+    <link rel="shortcut icon" href="img/Logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/home.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <div class="logo-icon">
+          <img src="img/Logo.png" alt="Logo Gparking" />
+        </div>
+        <div class="logo-text">Gparking</div>
+      </div>
+
+      <nav>
+        <div class="menu-toggle" id="menuToggle">
+          <i class="fas fa-bars"></i>
+        </div>
+        <ul id="navMenu">
+          <li><a href="home.html" class="active">Home</a></li>
+          <li><a href="setores.html">Setores</a></li>
+          <li><a href="servicos.html">Serviços</a></li>
+          <li><a href="sobre.html">Sobre nós</a></li>
+          <li class="mobile-only"><a id="entrar" href="index.html">Entrar</a></li>
+          <li class="mobile-only"><a id="criarConta" href="cadastro.html">Criar conta</a></li>
+          <li class="mobile-only user-menu-item" style="display: none;">
+            <a href="#" class="user-profile-mobile" id="openProfileMobile">
+              <img src="img/fotomidia.jpeg" alt="Perfil" class="user-avatar-small">
+              <span class="user-name"></span>
+            </a>
+          </li>
+          <li class="mobile-only user-menu-item" style="display: none;">
+            <a href="#" id="logoutMobile">Sair</a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="header-buttons" id="headerButtons">
+        <button class="header-btn login-btn" onclick="window.location.href='index.html'">Entrar</button>
+        <button class="header-btn register-btn" onclick="window.location.href='cadastro.html'">Criar conta</button>
+        
+        <div class="user-profile" id="userProfile" style="display: none;">
+          <div class="user-info">
+            <img src="img/fotomidia.jpeg" alt="Foto de perfil" class="user-avatar">
+            <span class="user-name"></span>
+          </div>
+          <div class="user-dropdown">
+            <a href="#" id="openProfileDropdown">Meu Perfil</a>
+            <a href="#" id="logoutBtn">Sair</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-content">
+          <h1>Gparking</h1>
+          <p>
+            Bem-vindo ao Gparking, o sistema inteligente que facilita o
+            gerenciamento e o controle das vagas do Senai Cimatec. Encontre,
+            registre e acompanhe seu estacionamento de forma rápida e prática!
+          </p>
+          <button class="btn" id="estacionarBtn">Estacionar</button>
+        </div>
+
+        <div class="hero-image">
+          <img src="img/hb20novo.png" alt="Sistema Gparking" />
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Sobre o Gparking</h3>
+          <p>
+            O sistema inteligente de estacionamento que revoluciona a forma como
+            você gerencia e controla vagas no Senai Cimatec.
+          </p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-section">
+          <h3>Links Rápidos</h3>
+          <ul class="footer-links">
+            <li><a href="home.html">Home</a></li>
+            <li><a href="setores.html">Setores</a></li>
+            <li><a href="servicos.html">Serviços</a></li>
+            <li><a href="sobre.html">Sobre Nós</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Contato</h3>
+          <p><i class="fas fa-map-marker-alt"></i> Senai Cimatec, Salvador - BA</p>
+          <p><i class="fas fa-phone"></i> (71) 99999-9999</p>
+          <p><i class="fas fa-envelope"></i> contato@gparking.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Gparking. Todos os direitos reservados.</p>
+      </div>
+    </footer>
+
+    <div id="profileModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Meu Perfil</h2>
+          <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="profile-info">
+            <div class="profile-avatar">
+              <img src="img/fotomidia.jpeg" alt="Foto de perfil" id="modalAvatar">
+              <button class="change-avatar-btn" id="btnMudarFoto" onclick="document.getElementById('inputFoto').click();">
+                Alterar Foto
+              </button>
+              <input type="file" id="inputFoto" accept="image/*" style="display: none;">
+            </div>
+            <div class="profile-details">
+              <div class="info-group">
+                <label>Nome:</label>
+                <span id="modalUserName"></span>
+              </div>
+              <div class="info-group">
+                <label>E-mail:</label>
+                <span id="modalUserEmail"></span>
+              </div>
+              <div class="info-group">
+                <label>Telefone:</label>
+                <span id="modalUserPhone"></span>
+              </div>
+              <div class="info-group">
+                <label>Tipo de Usuário:</label>
+                <span id="modalUserType"></span>
+              </div>
+            </div>
+          </div>
+
+          <div id="passwordChangeArea" style="display: none; margin-top: 20px; padding: 15px; border-top: 1px solid #eee; background: #f9f9f9; border-radius: 10px;">
+              <div class="info-group">
+                  <label style="color: #4a148c; font-weight: 600;">Nova Senha:</label>
+                  <input type="password" id="newPasswordInput" placeholder="Mínimo 4 caracteres" 
+                         style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin-top: 5px;">
+              </div>
+              <div style="display: flex; gap: 10px; margin-top: 15px;">
+                  <button class="btn" id="btnSalvarSenha" style="background: #27ae60; flex: 1; color: white;">Confirmar</button>
+                  <button class="btn" id="btnCancelarSenha" style="background: #e74c3c; flex: 1; color: white;">Cancelar</button>
+              </div>
+          </div>
+
+          <div class="profile-actions" id="mainProfileActions" style="margin-top: 20px;">
+            <button class="btn edit-profile-btn">Editar Perfil</button>
+            <button class="btn change-password-btn" id="btnAbrirTrocaSenha">Alterar Senha</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/home.js"></script>
+  </body>
+</html>

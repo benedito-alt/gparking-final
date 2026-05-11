@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gparking - Login</title>
+    <link rel="shortcut icon" href="public/img/Logo.png">
+    <link rel="stylesheet" href="public/css/login.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="left">
+        <div class="overlay">
+          <div class="logo-text-container">
+            <div class="logo">
+              <div class="icon">
+                <img src="public/img/Logo.png" alt="Logo Gparking" />
+              </div>
+            </div>
+            <h1>Gparking, Sua vaga no momento certo!!</h1>
+          </div>
+          <div class="image-container">
+            <img src="public/img/gparking.png" alt="Carro sobre smartphone" />
+          </div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="form-container">
+          <div class="icon-top">
+            <a href="public/home.html">
+              <img src="public/img/logoNome.png" alt="Nome Gparking" />
+            </a>
+          </div>
+          
+          <h2><span>Seja Bem-Vindo!</span></h2>
+
+          <div class="tabs">
+            <button class="tab active">Entre agora</button>
+            <button class="tab inactive" id="tabCadastro">Cadastre-se</button>
+          </div>
+
+          <form id="loginForm">
+            <p id="errorMessage" class="error-message" style="display: none; color: #e74c3c; margin-bottom: 15px; font-size: 0.9rem; font-weight: 600;"></p>
+            
+            <div class="input-group">
+              <input type="email" id="email" placeholder="E-mail" required />
+            </div>
+            <div class="input-group">
+              <input type="password" id="senha" placeholder="Senha" required />
+            </div>
+            <button type="submit" class="btn">Entrar</button>
+          </form>
+
+          <p class="login-text">
+            <a href="public/cadastro.html">Esqueceu sua senha?</a>
+          </p>
+
+          <div class="social">
+            <br><p>Ou entre com:</p>
+            <div class="icons">
+              <img src="public/img/logotipo-da-apple 1.png" alt="Apple">
+              <img src="public/img/google 1.png" alt="Google">
+              <img src="public/img/facebook 1.png" alt="Facebook">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const supabaseUrl = 'https://ejxkclftrgqmcckbezmv.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqeGtjbGZ0cmdxbWNja2Jlem12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjExMTQsImV4cCI6MjA5MTMzNzExNH0.CW7JJlPv0OuphV_smL7vhP_oiHP3GoqN78sHXaur2vw';
+      const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+      document.getElementById("tabCadastro").addEventListener("click", function () {
+        window.location.href = "./public/cadastro.html";
+      });
+
+      document.getElementById("loginForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const email = document.getElementById("email").value;
+        const senha = document.getElementById("senha").value;
+        const errorP = document.getElementById("errorMessage");
+
+        try {
+          const { data, error } = await _supabase.auth.signInWithPassword({
+            email: email,
+            password: senha,
+          });
+
+          if (error) {
+            errorP.textContent = "E-mail ou senha incorretos.";
+            errorP.style.display = "block";
+            return;
+          }
+
+          if (data.user) {
+  const { data: perfil } = await _supabase
+    .from('usuarios')
+    .select('*')
+    .eq('id', data.user.id)
+    .single();
+
+  localStorage.clear();
+  
+  // DADOS QUE O HOME.JS VAI USAR
+  localStorage.setItem("nomeUsuario", perfil?.nome || data.user.email.split('@')[0]);
+  localStorage.setItem("emailUsuario", data.user.email);
+  localStorage.setItem("tipoUsuario", perfil?.tipo_usuario || "Aluno");
+  localStorage.setItem("telefoneUsuario", perfil?.telefone || "");
+  
+  // ESTA É A LINHA QUE FALTAVA:
+  localStorage.setItem("userFaculdade", perfil?.faculdade_id || ""); 
+
+  window.location.href = "./public/home.html"; 
+}
+        } catch (err) {
+          errorP.textContent = "Erro de conexão.";
+          errorP.style.display = "block";
+        }
+      });
+    </script>
+  </body>
+</html>
