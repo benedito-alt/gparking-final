@@ -67,7 +67,7 @@
                 const { data: usuario, error: userError } = await _supabase
                     .from('usuarios')
                     .select('faculdade_id')
-                    .eq('email', email)
+                    .eq('nome', email)
                     .single();
 
                 if (userError || !usuario) throw new Error("Erro ao identificar faculdade.");
