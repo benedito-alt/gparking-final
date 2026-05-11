@@ -71,60 +71,66 @@
     </div>
 
     <script>
-      // Configurações do Supabase (Projeto GParking_Final)
-      const supabaseUrl = 'https://csaqfeivvtmtjlnwuxql.supabase.co';
-      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
-      const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  // Configurações do Supabase (Projeto GParking_Final)
+  const supabaseUrl = 'https://csaqfeivvtmtjlnwuxql.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
+  const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-      // Redirecionamento para cadastro
-      document.getElementById("tabCadastro").addEventListener("click", function () {
-        window.location.href = "./public/cadastro.html";
+  // Redirecionamento para cadastro
+  document.getElementById("tabCadastro").addEventListener("click", function () {
+    window.location.href = "./public/cadastro.html";
+  });
+
+  // Lógica de Login
+  document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const senha = document.getElementById("senha").value;
+    const errorP = document.getElementById("errorMessage");
+
+    try {
+      // 1. Autenticação
+      const { data, error } = await _supabase.auth.signInWithPassword({
+        email: email,
+        password: senha,
       });
 
-      // Lógica de Login
-      document.getElementById("loginForm").addEventListener("submit", async function(e) {
-        e.preventDefault();
-        const email = document.getElementById("email").value;
-        const senha = document.getElementById("senha").value;
-        const errorP = document.getElementById("errorMessage");
+      if (error) {
+        errorP.textContent = "E-mail ou senha incorretos.";
+        errorP.style.display = "block";
+        return;
+      }
 
-        try {
-          const { data, error } = await _supabase.auth.signInWithPassword({
-            email: email,
-            password: senha,
-          });
+      if (data.user) {
+        // 2. Busca dados complementares (Corrigido: usando data.user.id)
+        const { data: userData, error: userError } = await _supabase
+          .from('usuarios')
+          .select('*, faculdade(nome)')
+          .eq('id', data.user.id) // Antes estava authData (erro)
+          .single();
 
-          if (error) {
-            errorP.textContent = "E-mail ou senha incorretos.";
-            errorP.style.display = "block";
-            return;
-          }
-
-          if (data.user) {
-            // Busca dados complementares na tabela de usuários
-            const { data: userData, error: userError } = await _supabase
-    .from('usuarios')
-    .select('*, faculdade(nome)') // O segredo está aqui: busca o nome na tabela relacionada
-    .eq('id', authData.user.id)
-    .single();
-
-            localStorage.clear();
-            
-            // Salva dados no navegador para uso na home.html
-            localStorage.setItem("nomeUsuario", perfil?.nome || data.user.email.split('@')[0]);
-            localStorage.setItem("emailUsuario", data.user.email);
-            localStorage.setItem("tipoUsuario", perfil?.tipo_usuario || "Aluno");
-            localStorage.setItem("telefoneUsuario", perfil?.telefone || "");
-            localStorage.setItem("userFaculdade", perfil?.faculdade_id || ""); 
-
-            // Redireciona para a home
-            window.location.href = "./public/home.html"; 
-          }
-        } catch (err) {
-          errorP.textContent = "Erro de conexão com o banco de dados.";
-          errorP.style.display = "block";
+        if (userError) {
+            console.error("Erro ao buscar dados adicionais:", userError);
         }
-      });
-    </script>
+
+        // 3. Limpa e Salva no LocalStorage (Corrigido: usando userData)
+        localStorage.clear();
+        
+        localStorage.setItem("nomeUsuario", userData?.nome || data.user.email.split('@')[0]);
+        localStorage.setItem("emailUsuario", data.user.email);
+        localStorage.setItem("tipoUsuario", userData?.tipo_usuario || "Aluno");
+        localStorage.setItem("telefoneUsuario", userData?.telefone || "");
+        localStorage.setItem("nomeFaculdade", userData?.faculdade?.nome || "Não vinculada");
+
+        // 4. Redireciona
+        window.location.href = "./public/home.html"; 
+      }
+    } catch (err) {
+      console.error("Erro crítico:", err);
+      errorP.textContent = "Erro de conexão com o banco de dados.";
+      errorP.style.display = "block";
+    }
+  });
+</script>
   </body>
 </html>
