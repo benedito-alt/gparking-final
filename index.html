@@ -74,10 +74,6 @@
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
   const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-  // Redirecionamento simples
-  document.getElementById("tabCadastro").onclick = () => window.location.href = "./public/cadastro.html";
-
-  // Lógica de Login
   document.getElementById("loginForm").onsubmit = async function(e) {
     e.preventDefault();
     const email = document.getElementById("email").value;
@@ -85,11 +81,7 @@
     const errorP = document.getElementById("errorMessage");
 
     try {
-      // 1. Tenta logar
-      const { data, error } = await _supabase.auth.signInWithPassword({
-        email: email,
-        password: senha,
-      });
+      const { data, error } = await _supabase.auth.signInWithPassword({ email, password: senha });
 
       if (error) {
         errorP.textContent = "E-mail ou senha incorretos.";
@@ -98,29 +90,32 @@
       }
 
       if (data.user) {
-        // 2. Busca dados na tabela 'usuarios'
+        // Busca os dados complementares
         const { data: userData } = await _supabase
           .from('usuarios')
           .select('*, faculdade(nome)')
           .eq('id', data.user.id)
           .maybeSingle();
 
-        // 3. Limpa e salva apenas o que temos certeza que existe
+        // Limpa tudo e salva com segurança
         localStorage.clear();
+        
+        // Salvando informações básicas
         localStorage.setItem("emailUsuario", data.user.email);
         
         if (userData) {
-            localStorage.setItem("nomeUsuario", userData.nome || "");
-            localStorage.setItem("tipoUsuario", userData.tipo_usuario || "Aluno");
+            localStorage.setItem("nomeUsuario", userData.nome);
+            localStorage.setItem("tipoUsuario", userData.tipo_usuario);
             localStorage.setItem("telefoneUsuario", userData.telefone || "");
             localStorage.setItem("nomeFaculdade", userData.faculdade?.nome || "Não vinculada");
         }
 
-        // 4. Redireciona
-        window.location.href = "./public/home.html"; 
+        // AGUARDA UM INSTANTE E REDIRECIONA
+        setTimeout(() => {
+            window.location.href = "./public/home.html"; 
+        }, 500);
       }
     } catch (err) {
-      console.error("Erro interno:", err);
       errorP.textContent = "Erro de conexão. Tente novamente.";
       errorP.style.display = "block";
     }
