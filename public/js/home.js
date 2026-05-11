@@ -1,6 +1,4 @@
-// home.js - Sistema GParking (Versão Oficial Corrigida)
-
-// 1. CONFIGURAÇÃO DO CLIENTE (Utilizando suas credenciais)
+// 1. CONFIGURAÇÃO DO CLIENTE
 const supabaseUrl = 'https://csaqfeivvtmtjlnwuxql.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
 const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
@@ -12,61 +10,55 @@ async function checkAuth() {
 
         if (sessionError) throw sessionError;
 
-        if (session) {
-            const userAuth = session.user;
-            
-            // Busca dados do usuário e o nome da faculdade vinculada
-            const { data: userData, error: dbError } = await _supabase
-                .from('usuarios') 
-                .select('*, faculdade(nome)')
-                .eq('id', userAuth.id)
-                .maybeSingle(); 
-
-            if (dbError) {
-                console.error("Erro ao buscar dados do perfil:", dbError.message);
-                return;
-            }
-
-            if (userData) {
-                // Sincroniza o LocalStorage com os dados mais recentes do banco
-                localStorage.setItem("nomeUsuario", userData.nome);
-                localStorage.setItem("emailUsuario", userAuth.email);
-                localStorage.setItem("telefoneUsuario", userData.telefone || "");
-                localStorage.setItem("tipoUsuario", userData.tipo_usuario);
-                localStorage.setItem("nomeFaculdade", userData.faculdade?.nome || "Não vinculada");
-
-                showUserProfile(userData);
-            }
-        } else {
-            showLoginButtons();
+        // SE NÃO TIVER SESSÃO, EXPULSA O USUÁRIO PARA O LOGIN
+        if (!session) {
+            console.log("Acesso negado. Redirecionando para login...");
+            window.location.href = "../index.html"; 
+            return;
         }
+
+        const userAuth = session.user;
+        
+        // Busca dados atualizados do banco
+        const { data: userData, error: dbError } = await _supabase
+            .from('usuarios') 
+            .select('*, faculdade(nome)')
+            .eq('id', userAuth.id)
+            .maybeSingle(); 
+
+        if (dbError) {
+            console.error("Erro ao buscar dados do perfil:", dbError.message);
+        }
+
+        if (userData) {
+            // Sincroniza o LocalStorage
+            localStorage.setItem("nomeUsuario", userData.nome);
+            localStorage.setItem("emailUsuario", userAuth.email);
+            localStorage.setItem("telefoneUsuario", userData.telefone || "");
+            localStorage.setItem("tipoUsuario", userData.tipo_usuario);
+            localStorage.setItem("nomeFaculdade", userData.faculdade?.nome || "Não vinculada");
+
+            showUserProfile(userData);
+        }
+        
     } catch (err) {
-        console.error("Erro na verificação de login:", err.message);
-        showLoginButtons();
+        console.error("Erro crítico:", err.message);
+        window.location.href = "../index.html";
     }
 }
 
 // 3. INTERFACE DO USUÁRIO
 function showUserProfile(user) {
-    // Esconde botões de Login/Cadastro
     document.querySelectorAll(".login-btn, .register-btn").forEach(btn => btn.style.display = "none");
     
-    // Mostra o container do perfil
     const userProfile = document.getElementById("userProfile");
     if (userProfile) userProfile.style.display = "flex";
     
-    // Atualiza nomes na tela
     document.querySelectorAll(".user-name").forEach((element) => {
         element.textContent = user.nome;
     });
 
     setupModalEvents();
-}
-
-function showLoginButtons() {
-    document.querySelectorAll(".login-btn, .register-btn").forEach(btn => btn.style.display = "block");
-    const userProfile = document.getElementById("userProfile");
-    if (userProfile) userProfile.style.display = "none";
 }
 
 // 4. GESTÃO DO PERFIL (EDIÇÃO)
@@ -93,13 +85,7 @@ async function saveProfileChanges() {
         btnEditar.textContent = "Editar Perfil";
         btnEditar.style.backgroundColor = ""; 
         
-        if (typeof Toastify !== "undefined") {
-            Toastify({
-                text: "Perfil atualizado!",
-                duration: 3000,
-                style: { background: "green" }
-            }).showToast();
-        }
+        alert("Perfil atualizado com sucesso!");
     }
 }
 
@@ -140,7 +126,7 @@ function openModal() {
 document.addEventListener("DOMContentLoaded", () => {
     checkAuth();
 
-    // Evento para fechar modal
+    // Fechar modal
     const closeBtn = document.querySelector(".close-modal");
     if (closeBtn) {
         closeBtn.onclick = () => {
@@ -155,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             await _supabase.auth.signOut();
             localStorage.clear();
-            window.location.href = "index.html";
+            window.location.href = "../index.html";
         };
     });
 
@@ -164,7 +150,6 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.onclick = (e) => { e.preventDefault(); openModal(); };
     });
     
-    // Botão Estacionar
     const estacionarBtn = document.getElementById("estacionarBtn");
     if (estacionarBtn) {
         estacionarBtn.onclick = () => window.location.href = "setores.html";

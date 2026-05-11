@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gparking - Login</title>
@@ -8,118 +8,111 @@
     <link rel="stylesheet" href="public/css/login.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  </head>
-  <body>
+</head>
+<body>
     <div class="container">
-      <div class="left">
-        <div class="overlay">
-          <div class="logo-text-container">
-            <div class="logo">
-              <div class="icon">
-                <img src="public/img/Logo.png" alt="Logo Gparking" />
-              </div>
+        <div class="left">
+            <div class="overlay">
+                <div class="logo-text-container">
+                    <div class="logo">
+                        <div class="icon">
+                            <img src="public/img/Logo.png" alt="Logo Gparking" />
+                        </div>
+                    </div>
+                    <h1>Gparking, Sua vaga no momento certo!!</h1>
+                </div>
+                <div class="image-container">
+                    <img src="public/img/gparking.png" alt="Carro sobre smartphone" />
+                </div>
             </div>
-            <h1>Gparking, Sua vaga no momento certo!!</h1>
-          </div>
-          <div class="image-container">
-            <img src="public/img/gparking.png" alt="Carro sobre smartphone" />
-          </div>
         </div>
-      </div>
 
-      <div class="right">
-        <div class="form-container">
-          <div class="icon-top">
-            <a href="public/home.html">
-              <img src="public/img/logoNome.png" alt="Nome Gparking" />
-            </a>
-          </div>
-          
-          <h2><span>Seja Bem-Vindo!</span></h2>
+        <div class="right">
+            <div class="form-container">
+                <div class="icon-top">
+                    <img src="public/img/logoNome.png" alt="Nome Gparking" />
+                </div>
+                
+                <h2><span>Seja Bem-Vindo!</span></h2>
 
-          <div class="tabs">
-            <button class="tab active">Entre agora</button>
-            <button class="tab inactive" id="tabCadastro">Cadastre-se</button>
-          </div>
+                <div class="tabs">
+                    <button class="tab active">Entre agora</button>
+                    <button class="tab inactive" id="tabCadastro" onclick="window.location.href='public/cadastro.html'">Cadastre-se</button>
+                </div>
 
-          <form id="loginForm">
-            <p id="errorMessage" class="error-message" style="display: none; color: #e74c3c; margin-bottom: 15px; font-size: 0.9rem; font-weight: 600;"></p>
-            
-            <div class="input-group">
-              <input type="email" id="email" placeholder="E-mail" required />
+                <form id="loginForm">
+                    <p id="errorMessage" class="error-message" style="display: none; color: #e74c3c; margin-bottom: 15px; font-size: 0.9rem; font-weight: 600;"></p>
+                    
+                    <div class="input-group">
+                        <input type="email" id="email" placeholder="E-mail" required />
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="senha" placeholder="Senha" required />
+                    </div>
+                    <button type="submit" class="btn">Entrar</button>
+                </form>
+
+                <p class="login-text">
+                    <a href="#">Esqueceu sua senha?</a>
+                </p>
+
+                <div class="social">
+                    <br><p>Ou entre com:</p>
+                    <div class="icons">
+                        <img src="public/img/logotipo-da-apple 1.png" alt="Apple">
+                        <img src="public/img/google 1.png" alt="Google">
+                        <img src="public/img/facebook 1.png" alt="Facebook">
+                    </div>
+                </div>
             </div>
-            <div class="input-group">
-              <input type="password" id="senha" placeholder="Senha" required />
-            </div>
-            <button type="submit" class="btn">Entrar</button>
-          </form>
-
-          <p class="login-text">
-            <a href="public/cadastro.html">Esqueceu sua senha?</a>
-          </p>
-
-          <div class="social">
-            <br><p>Ou entre com:</p>
-            <div class="icons">
-              <img src="public/img/logotipo-da-apple 1.png" alt="Apple">
-              <img src="public/img/google 1.png" alt="Google">
-              <img src="public/img/facebook 1.png" alt="Facebook">
-            </div>
-          </div>
         </div>
-      </div>
     </div>
-<script>
-  const supabaseUrl = 'https://csaqfeivvtmtjlnwuxql.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
-  const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-  document.getElementById("loginForm").onsubmit = async function(e) {
-    e.preventDefault();
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
-    const errorP = document.getElementById("errorMessage");
+    <script>
+        const supabaseUrl = 'https://csaqfeivvtmtjlnwuxql.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
+        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    try {
-      const { data, error } = await _supabase.auth.signInWithPassword({ email, password: senha });
+        document.getElementById("loginForm").onsubmit = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById("email").value;
+            const senha = document.getElementById("senha").value;
+            const errorP = document.getElementById("errorMessage");
 
-      if (error) {
-        errorP.textContent = "E-mail ou senha incorretos.";
-        errorP.style.display = "block";
-        return;
-      }
+            try {
+                const { data, error } = await _supabase.auth.signInWithPassword({ email, password: senha });
 
-      if (data.user) {
-        // Busca os dados complementares
-        const { data: userData } = await _supabase
-          .from('usuarios')
-          .select('*, faculdade(nome)')
-          .eq('id', data.user.id)
-          .maybeSingle();
+                if (error) {
+                    errorP.textContent = "E-mail ou senha incorretos.";
+                    errorP.style.display = "block";
+                    return;
+                }
 
-        // Limpa tudo e salva com segurança
-        localStorage.clear();
-        
-        // Salvando informações básicas
-        localStorage.setItem("emailUsuario", data.user.email);
-        
-        if (userData) {
-            localStorage.setItem("nomeUsuario", userData.nome);
-            localStorage.setItem("tipoUsuario", userData.tipo_usuario);
-            localStorage.setItem("telefoneUsuario", userData.telefone || "");
-            localStorage.setItem("nomeFaculdade", userData.faculdade?.nome || "Não vinculada");
-        }
+                if (data.user) {
+                    // Busca os dados complementares da tabela 'usuarios'
+                    const { data: userData } = await _supabase
+                        .from('usuarios')
+                        .select('*, faculdade(nome)')
+                        .eq('id', data.user.id)
+                        .maybeSingle();
 
-        // AGUARDA UM INSTANTE E REDIRECIONA
-        setTimeout(() => {
-            window.location.href = "./public/home.html"; 
-        }, 500);
-      }
-    } catch (err) {
-      errorP.textContent = "Erro de conexão. Tente novamente.";
-      errorP.style.display = "block";
-    }
-  };
-</script>
-  </body>
+                    // SALVANDO INFORMAÇÕES NO LOCALSTORAGE
+                    localStorage.setItem("emailUsuario", data.user.email);
+                    if (userData) {
+                        localStorage.setItem("nomeUsuario", userData.nome);
+                        localStorage.setItem("tipoUsuario", userData.tipo_usuario);
+                        localStorage.setItem("telefoneUsuario", userData.telefone || "");
+                        localStorage.setItem("nomeFaculdade", userData.faculdade?.nome || "Não vinculada");
+                    }
+
+                    // Redireciona para a home dentro da pasta public
+                    window.location.href = "public/home.html";
+                }
+            } catch (err) {
+                errorP.textContent = "Erro de conexão. Tente novamente.";
+                errorP.style.display = "block";
+            }
+        };
+    </script>
+</body>
 </html>
