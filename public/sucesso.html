@@ -73,19 +73,22 @@
     </div>
 
     <script>
-        // 1. Tenta pegar o nome pela URL (ex: sucesso.html?nome=Joao)
-        const urlParams = new URLSearchParams(window.location.search);
-        let nome = urlParams.get('nome');
+       window.onload = function() {
+            // Tenta pegar do localStorage primeiro
+            let nomeSalvo = localStorage.getItem("nomeUsuarioCadastrado");
+            
+            // Se não achar no localStorage, tenta pegar da URL (?nome=teste)
+            if (!nomeSalvo) {
+                const urlParams = new URLSearchParams(window.location.search);
+                nomeSalvo = urlParams.get('nome');
+            }
 
-        // 2. Se não estiver na URL, tenta pegar do localStorage (salvo no cadastro.html)
-        if (!nome) {
-            nome = localStorage.getItem("nomeUsuarioCadastrado");
-        }
+            console.log("Nome detectado:", nomeSalvo); // Isso ajuda a debugar no F12
 
-        // 3. Aplica o nome na tela
-        if (nome) {
-            document.getElementById('userName').textContent = nome;
-        }
+            if (nomeSalvo) {
+                document.getElementById('userName').textContent = nomeSalvo;
+            }
+        };
     </script>
 </body>
 </html>

@@ -105,6 +105,7 @@
         window.location.href = "../index.html";
       });
 
+      // LÓGICA DE SUBMISSÃO
       document.getElementById("cadastroForm").addEventListener("submit", async function(e) {
         e.preventDefault();
         
@@ -144,9 +145,10 @@
 
             if (dbError) throw dbError;
 
-            // --- LINHA MÁGICA PARA O NOME APARECER NO SUCESSO.HTML ---
+            // SALVA O NOME NO NAVEGADOR
             localStorage.setItem("nomeUsuarioCadastrado", nome); 
             
+            // REDIRECIONA (O ./ garante que procure na pasta atual 'public')
             window.location.href = "./sucesso.html";
           }
         } catch (error) {
