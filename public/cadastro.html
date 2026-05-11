@@ -105,7 +105,6 @@
         window.location.href = "../index.html";
       });
 
-      // LÓGICA DE SUBMISSÃO
       document.getElementById("cadastroForm").addEventListener("submit", async function(e) {
         e.preventDefault();
         
@@ -137,6 +136,7 @@
                 { 
                   id: authData.user.id, 
                   nome: nome, 
+                  email: email, // <--- ADICIONADO: Agora o email será salvo automaticamente!
                   telefone: telefone, 
                   tipo_usuario: tipoUsuario,
                   faculdade_id: faculdadeId 
@@ -145,11 +145,9 @@
 
             if (dbError) throw dbError;
 
-            // PEGA O TEXTO DA FACULDADE SELECIONADA
             const selectFaculdade = document.getElementById('faculdade');
             const nomeFaculdade = selectFaculdade.options[selectFaculdade.selectedIndex].text;
 
-            // SALVA TUDO CORRETAMENTE
             localStorage.setItem("nomeUsuarioCadastrado", nome);
             localStorage.setItem("nomeFaculdade", nomeFaculdade); 
             

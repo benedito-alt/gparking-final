@@ -75,12 +75,16 @@
 
         document.getElementById("loginForm").onsubmit = async function(e) {
             e.preventDefault();
-            const email = document.getElementById("email").value;
-            const senha = document.getElementById("senha").value;
+            const emailInput = document.getElementById("email").value;
+            const senhaInput = document.getElementById("senha").value;
             const errorP = document.getElementById("errorMessage");
 
             try {
-                const { data, error } = await _supabase.auth.signInWithPassword({ email, password: senha });
+                // 1. Tenta fazer o login na autenticação do Supabase
+                const { data, error } = await _supabase.auth.signInWithPassword({ 
+                    email: emailInput, 
+                    password: senhaInput 
+                });
 
                 if (error) {
                     errorP.textContent = "E-mail ou senha incorretos.";
@@ -89,24 +93,27 @@
                 }
 
                 if (data.user) {
-                    // Busca os dados complementares da tabela 'usuarios'
-                    const { data: userData } = await _supabase
+                    // 2. Busca os dados do perfil na sua tabela 'usuarios' usando o ID do usuário logado
+                    const { data: userData, error: userError } = await _supabase
                         .from('usuarios')
                         .select('*, faculdade(nome)')
                         .eq('id', data.user.id)
                         .maybeSingle();
 
-                    // SALVANDO INFORMAÇÕES NO LOCALSTORAGE
-                    localStorage.setItem("emailUsuario", data.user.email);
                     if (userData) {
+                        // 3. SALVANDO INFORMAÇÕES NO LOCALSTORAGE PARA USAR NAS OUTRAS PÁGINAS
+                        localStorage.setItem("emailUsuario", userData.email || data.user.email);
                         localStorage.setItem("nomeUsuario", userData.nome);
                         localStorage.setItem("tipoUsuario", userData.tipo_usuario);
-                        localStorage.setItem("telefoneUsuario", userData.telefone || "");
+                        localStorage.setItem("faculdadeId", userData.faculdade_id);
                         localStorage.setItem("nomeFaculdade", userData.faculdade?.nome || "Não vinculada");
-                    }
 
-                    // Redireciona para a home dentro da pasta public
-                    window.location.href = "public/home.html";
+                        // Redireciona para a home
+                        window.location.href = "public/home.html";
+                    } else {
+                        errorP.textContent = "Perfil não encontrado na tabela usuários.";
+                        errorP.style.display = "block";
+                    }
                 }
             } catch (err) {
                 errorP.textContent = "Erro de conexão. Tente novamente.";
