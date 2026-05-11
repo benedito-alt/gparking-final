@@ -145,15 +145,14 @@
 
             if (dbError) throw dbError;
 
-            // SALVA O NOME NO NAVEGADOR
-            localStorage.setItem("nomeUsuarioCadastrado", nome); 
-            // Dentro do cadastroForm.addEventListener, antes do window.location...
-          const selectFaculdade = document.getElementById('faculdade');
-          const nomeFaculdade = selectFaculdade.options[selectFaculdade.selectedIndex].text;
+            // PEGA O TEXTO DA FACULDADE SELECIONADA
+            const selectFaculdade = document.getElementById('faculdade');
+            const nomeFaculdade = selectFaculdade.options[selectFaculdade.selectedIndex].text;
 
-           localStorage.setItem("nomeUsuarioCadastrado", nome);
-           localStorage.setItem("nomeFaculdade", nomeFaculdade); // Salva o nome da faculdade escolhida
-            // REDIRECIONA (O ./ garante que procure na pasta atual 'public')
+            // SALVA TUDO CORRETAMENTE
+            localStorage.setItem("nomeUsuarioCadastrado", nome);
+            localStorage.setItem("nomeFaculdade", nomeFaculdade); 
+            
             window.location.href = "./sucesso.html";
           }
         } catch (error) {
