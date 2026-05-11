@@ -6,31 +6,42 @@ const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 // 1. VERIFICAÇÃO DE AUTENTICAÇÃO REAL
 async function checkAuth() {
-    const { data: { session } } = await _supabase.auth.getSession();
+    try {
+        const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
 
-    if (session) {
-        const userAuth = session.user;
-        
-        // Busca dados extras e o nome da faculdade via JOIN
-        const { data: userData, error } = await _supabase
-            .from('usuarios')
-            .select('*, faculdade(nome)')
-            .eq('id', userAuth.id)
-            .single();
+        if (sessionError) throw sessionError;
 
-        if (userData) {
-            localStorage.setItem("nomeUsuario", userData.nome);
-            localStorage.setItem("emailUsuario", userAuth.email);
-            localStorage.setItem("telefoneUsuario", userData.telefone || "");
-            localStorage.setItem("tipoUsuario", userData.tipo_usuario);
-            localStorage.setItem("userFaculdade", userData.faculdade_id);
-            // GUARDA O NOME DA FACULDADE VINDO DO BANCO
-            localStorage.setItem("nomeFaculdade", userData.faculdade?.nome || "Não vinculada");
+        if (session) {
+            const userAuth = session.user;
+            
+            // Tentamos buscar na tabela 'usuarios'
+            // DICA: Verifique no seu painel do Supabase se o nome é 'usuarios' ou 'Usuarios'
+            const { data: userData, error: dbError } = await _supabase
+                .from('usuarios') 
+                .select('*, faculdade(nome)')
+                .eq('id', userAuth.id)
+                .maybeSingle(); // maybeSingle não quebra se não achar nada
 
-            window.currentUser = userData;
-            showUserProfile(userData);
+            if (dbError) {
+                console.error("Erro na tabela usuarios:", dbError.message);
+                // Se der erro de tabela não encontrada, tente mudar para 'Usuarios' ou 'profiles'
+                return;
+            }
+
+            if (userData) {
+                localStorage.setItem("nomeUsuario", userData.nome);
+                localStorage.setItem("emailUsuario", userAuth.email);
+                localStorage.setItem("telefoneUsuario", userData.telefone || "");
+                localStorage.setItem("tipoUsuario", userData.tipo_usuario);
+                localStorage.setItem("nomeFaculdade", userData.faculdade?.nome || "Não vinculada");
+
+                showUserProfile(userData);
+            }
+        } else {
+            showLoginButtons();
         }
-    } else {
+    } catch (err) {
+        console.error("Erro crítico de autenticação:", err);
         showLoginButtons();
     }
 }
