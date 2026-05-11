@@ -71,14 +71,17 @@
     </div>
 
     <script>
-      const supabaseUrl = 'https://ejxkclftrgqmcckbezmv.supabase.co';
-      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqeGtjbGZ0cmdxbWNja2Jlem12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjExMTQsImV4cCI6MjA5MTMzNzExNH0.CW7JJlPv0OuphV_smL7vhP_oiHP3GoqN78sHXaur2vw';
+      // Configurações do Supabase (Projeto GParking_Final)
+      const supabaseUrl = 'https://csaqfeivvtmtjlnwuxql.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
       const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
+      // Redirecionamento para cadastro
       document.getElementById("tabCadastro").addEventListener("click", function () {
         window.location.href = "./public/cadastro.html";
       });
 
+      // Lógica de Login
       document.getElementById("loginForm").addEventListener("submit", async function(e) {
         e.preventDefault();
         const email = document.getElementById("email").value;
@@ -98,27 +101,27 @@
           }
 
           if (data.user) {
-  const { data: perfil } = await _supabase
-    .from('usuarios')
-    .select('*')
-    .eq('id', data.user.id)
-    .single();
+            // Busca dados complementares na tabela de usuários
+            const { data: perfil } = await _supabase
+              .from('usuarios')
+              .select('*')
+              .eq('id', data.user.id)
+              .single();
 
-  localStorage.clear();
-  
-  // DADOS QUE O HOME.JS VAI USAR
-  localStorage.setItem("nomeUsuario", perfil?.nome || data.user.email.split('@')[0]);
-  localStorage.setItem("emailUsuario", data.user.email);
-  localStorage.setItem("tipoUsuario", perfil?.tipo_usuario || "Aluno");
-  localStorage.setItem("telefoneUsuario", perfil?.telefone || "");
-  
-  // ESTA É A LINHA QUE FALTAVA:
-  localStorage.setItem("userFaculdade", perfil?.faculdade_id || ""); 
+            localStorage.clear();
+            
+            // Salva dados no navegador para uso na home.html
+            localStorage.setItem("nomeUsuario", perfil?.nome || data.user.email.split('@')[0]);
+            localStorage.setItem("emailUsuario", data.user.email);
+            localStorage.setItem("tipoUsuario", perfil?.tipo_usuario || "Aluno");
+            localStorage.setItem("telefoneUsuario", perfil?.telefone || "");
+            localStorage.setItem("userFaculdade", perfil?.faculdade_id || ""); 
 
-  window.location.href = "./public/home.html"; 
-}
+            // Redireciona para a home
+            window.location.href = "./public/home.html"; 
+          }
         } catch (err) {
-          errorP.textContent = "Erro de conexão.";
+          errorP.textContent = "Erro de conexão com o banco de dados.";
           errorP.style.display = "block";
         }
       });
