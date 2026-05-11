@@ -1,23 +1,35 @@
 // home.js - Sistema GParking (Versão Final Supabase)
 
-// 1. VERIFICAÇÃO DE AUTENTICAÇÃO
-function checkAuth() {
-    const nomeSalvo = localStorage.getItem("nomeUsuario");
-    const faculdadeSalva = localStorage.getItem("userFaculdade");
+// Configuração do Supabase (Garanta que estas variáveis existam no escopo global ou importe-as)
+const supabaseUrl = 'https://csaqfeivvtmtjlnwuxql.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
+const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    if (nomeSalvo) {
-        const user = {
-            nome: nomeSalvo,
-            email: localStorage.getItem("emailUsuario"),
-            telefone: localStorage.getItem("telefoneUsuario"),
-            tipo: localStorage.getItem("tipoUsuario") || "Aluno" 
-        };
-        window.currentUser = user; 
-        showUserProfile(user);
+// 1. VERIFICAÇÃO DE AUTENTICAÇÃO REAL
+async function checkAuth() {
+    const { data: { session } } = await _supabase.auth.getSession();
 
-        // Carrega setores apenas se houver faculdade vinculada ao usuário
-        if (faculdadeSalva) {
-            carregarSetores(faculdadeSalva);
+    if (session) {
+        const userAuth = session.user;
+        
+        // Busca dados extras na tabela 'usuarios'
+        const { data: userData, error } = await _supabase
+            .from('usuarios')
+            .select('*, faculdade(nome)')
+            .eq('id', userAuth.id)
+            .single();
+
+        if (userData) {
+            // Atualiza LocalStorage para garantir consistência
+            localStorage.setItem("nomeUsuario", userData.nome);
+            localStorage.setItem("emailUsuario", userAuth.email);
+            localStorage.setItem("telefoneUsuario", userData.telefone || "");
+            localStorage.setItem("tipoUsuario", userData.tipo_usuario);
+            localStorage.setItem("userFaculdade", userData.faculdade_id);
+            localStorage.setItem("nomeFaculdade", userData.faculdade?.nome || "Não vinculada");
+
+            window.currentUser = userData;
+            showUserProfile(userData);
         }
     } else {
         showLoginButtons();
@@ -33,8 +45,7 @@ function notificarSucesso(mensagem) {
         position: "right",
         style: {
             background: "linear-gradient(to right, #4a148c, #6a1b9a)",
-            borderRadius: "10px",
-            boxShadow: "0 5px 15px rgba(0,0,0,0.2)"
+            borderRadius: "10px"
         }
     }).showToast();
 }
@@ -49,22 +60,15 @@ function showUserProfile(user) {
         element.textContent = user.nome;
     });
     
-    // Carregar Foto de Perfil
-    const photoKey = `userAvatar_${user.email}`;
+    // Carregar Foto
+    const photoKey = `userAvatar_${localStorage.getItem("emailUsuario")}`;
     const fotoSalva = localStorage.getItem(photoKey);
     const avatares = document.querySelectorAll(".user-avatar, .user-avatar-small, #modalAvatar");
     
     if (fotoSalva) {
         avatares.forEach(img => img.src = fotoSalva);
-    } else {
-        avatares.forEach(img => img.src = "img/fotomidia.jpeg");
     }
 
-    const estacionarBtn = document.getElementById("estacionarBtn");
-    if (estacionarBtn) {
-        estacionarBtn.onclick = () => window.location.href = "setores.html";
-    }
-    
     setupModalEvents();
 }
 
@@ -74,50 +78,16 @@ function showLoginButtons() {
     if (userProfile) userProfile.style.display = "none";
 }
 
-// 2. BUSCA DE DADOS (SUPABASE)
-async function popularFaculdades() {
-    // Ajustado para 'faculdade' no singular conforme seu banco
-    const { data, error } = await _supabase.from('faculdade').select('id, nome');
-    
-    if (data) {
-        const select = document.getElementById('faculdade');
-        if (!select) return;
-
-        select.innerHTML = '<option value="" disabled selected>Selecione sua faculdade</option>';
-        data.forEach(f => {
-            select.add(new Option(f.nome, f.id));
-        });
-    }
-}
-
-async function carregarSetores(fId) {
-    const { data, error } = await _supabase
-        .from('setores')
-        .select('*')
-        .eq('faculdade_id', fId); 
-    
-    if (data) {
-        console.log("Setores filtrados para a faculdade:", data);
-        // Aqui você insere a lógica para renderizar os setores na tela
-    }
-}
-
-// 3. LOGICA DE PERFIL E SEGURANÇA
+// 2. LOGICA DE PERFIL (SALVAR NO BANCO)
 async function saveProfileChanges() {
-    const inputNome = document.getElementById("editNome");
-    const inputTelefone = document.getElementById("editTelefone");
-    const email = localStorage.getItem("emailUsuario");
+    const novoNome = document.getElementById("editNome").value;
+    const novoTelefone = document.getElementById("editTelefone").value;
+    const { data: { user } } = await _supabase.auth.getUser();
 
-    if (!inputNome || !inputTelefone) return;
-
-    const novoNome = inputNome.value;
-    const novoTelefone = inputTelefone.value;
-
-    // Atualiza no Supabase (na sua tabela de usuários/profiles)
     const { error } = await _supabase
-        .from('profiles') // certifique-se que o nome da tabela é profiles ou users
+        .from('usuarios') // Corrigido de 'profiles' para 'usuarios'
         .update({ nome: novoNome, telefone: novoTelefone })
-        .eq('email', email);
+        .eq('id', user.id);
 
     if (!error) {
         localStorage.setItem("nomeUsuario", novoNome);
@@ -137,58 +107,9 @@ async function saveProfileChanges() {
     }
 }
 
-async function handlePasswordChange(novaSenha) {
-    if (novaSenha.length < 6) {
-        alert("A senha deve ter pelo menos 6 caracteres.");
-        return;
-    }
-
-    const { data, error } = await _supabase.auth.updateUser({
-        password: novaSenha
-    });
-
-    if (!error) {
-        notificarSucesso("Senha alterada com sucesso!");
-        document.getElementById("btnCancelarSenha").click();
-    } else {
-        alert("Erro ao alterar senha: " + error.message);
-    }
-}
-
-// 4. EVENTOS E AUXILIARES
+// 3. EVENTOS DO MODAL
 function setupModalEvents() {
-    const passArea = document.getElementById("passwordChangeArea");
-    const mainActions = document.getElementById("mainProfileActions");
-    
-    const btnAbrirTrocaSenha = document.getElementById("btnAbrirTrocaSenha");
-    const btnSalvarSenha = document.getElementById("btnSalvarSenha");
-    const btnCancelarSenha = document.getElementById("btnCancelarSenha");
     const btnEditarPerfil = document.querySelector(".edit-profile-btn");
-
-    if (btnAbrirTrocaSenha) {
-        btnAbrirTrocaSenha.onclick = (e) => {
-            e.preventDefault();
-            passArea.style.display = "block";
-            mainActions.style.display = "none";
-        };
-    }
-
-    if (btnCancelarSenha) {
-        btnCancelarSenha.onclick = (e) => {
-            e.preventDefault();
-            passArea.style.display = "none";
-            mainActions.style.display = "flex";
-            document.getElementById("newPasswordInput").value = "";
-        };
-    }
-
-    if (btnSalvarSenha) {
-        btnSalvarSenha.onclick = (e) => {
-            e.preventDefault();
-            const novaSenha = document.getElementById("newPasswordInput").value;
-            handlePasswordChange(novaSenha);
-        };
-    }
 
     if (btnEditarPerfil) {
         btnEditarPerfil.onclick = () => {
@@ -196,9 +117,9 @@ function setupModalEvents() {
             const telefoneEl = document.getElementById("modalUserPhone");
 
             if (btnEditarPerfil.textContent === "Editar Perfil") {
-                nomeEl.innerHTML = `<input type="text" id="editNome" value="${nomeEl.textContent}" style="width:100%; color: black;">`;
-                telefoneEl.innerHTML = `<input type="text" id="editTelefone" value="${telefoneEl.textContent}" style="width:100%; color: black;">`;
-                btnEditarPerfil.textContent = "Salvar Alterações";
+                nomeEl.innerHTML = `<input type="text" id="editNome" value="${nomeEl.textContent}" style="width:100%; color: black; padding:5px; border-radius:5px;">`;
+                telefoneEl.innerHTML = `<input type="text" id="editTelefone" value="${telefoneEl.textContent}" style="width:100%; color: black; padding:5px; border-radius:5px;">`;
+                btnEditarPerfil.textContent = "Confirmar";
                 btnEditarPerfil.style.backgroundColor = "#27ae60";
             } else {
                 saveProfileChanges();
@@ -211,37 +132,46 @@ function openModal() {
     const modal = document.getElementById("profileModal");
     if (!modal) return;
     
-    // Preenche dados do modal
     document.getElementById("modalUserName").textContent = localStorage.getItem("nomeUsuario");
     document.getElementById("modalUserEmail").textContent = localStorage.getItem("emailUsuario");
     document.getElementById("modalUserPhone").textContent = localStorage.getItem("telefoneUsuario") || "Não informado";
     document.getElementById("modalUserType").textContent = localStorage.getItem("tipoUsuario");
+    document.getElementById("modalUserFaculdade").textContent = localStorage.getItem("nomeFaculdade") || "Carregando...";
 
     modal.style.display = "block";
     document.body.style.overflow = "hidden";
 }
 
-// 5. INICIALIZAÇÃO
+// 4. INICIALIZAÇÃO
 document.addEventListener("DOMContentLoaded", () => {
     checkAuth();
-    popularFaculdades();
-    
-    // Logout
-    const logoutAction = (e) => {
-        e.preventDefault();
-        localStorage.clear();
-        window.location.href = "index.html"; // Ajustado para raiz
-    };
+    // Dentro da checkAuth(), onde você recebe o userData do Supabase:
+if (userData) {
+    localStorage.setItem("nomeFaculdade", userData.faculdade?.nome || "Não vinculada");
+    // ... restante do código
+}
+    // Botão Estacionar
+    const estacionarBtn = document.getElementById("estacionarBtn");
+    if (estacionarBtn) {
+        estacionarBtn.onclick = () => window.location.href = "setores.html";
+    }
 
+    // Logout
     document.querySelectorAll("#logoutBtn, #logoutMobile").forEach(btn => {
-        if (btn) btn.onclick = logoutAction;
+        if (btn) btn.onclick = async (e) => {
+            e.preventDefault();
+            await _supabase.auth.signOut();
+            localStorage.clear();
+            window.location.href = "index.html";
+        };
     });
 
-    // Modal
+    // Abrir Perfil
     document.querySelectorAll("#openProfileDropdown, #openProfileMobile").forEach(btn => {
         if (btn) btn.onclick = (e) => { e.preventDefault(); openModal(); };
     });
 
+    // Fechar Modal
     const closeBtn = document.querySelector(".close-modal");
     if (closeBtn) closeBtn.onclick = () => {
         document.getElementById("profileModal").style.display = "none";

@@ -102,11 +102,11 @@
 
           if (data.user) {
             // Busca dados complementares na tabela de usuários
-            const { data: perfil } = await _supabase
-              .from('usuarios')
-              .select('*')
-              .eq('id', data.user.id)
-              .single();
+            const { data: userData, error: userError } = await _supabase
+    .from('usuarios')
+    .select('*, faculdade(nome)') // O segredo está aqui: busca o nome na tabela relacionada
+    .eq('id', authData.user.id)
+    .single();
 
             localStorage.clear();
             
