@@ -24,7 +24,7 @@
             display: inline-block;
             text-decoration: none;
             text-align: center;
-            background: #4a148c; /* Roxo padrão do site */
+            background: #4a148c; 
             color: white;
             padding: 15px 30px;
             border-radius: 8px;
@@ -67,15 +67,22 @@
                     Acesse com seu e-mail e senha e Estacione!
                 </p>
 
-                <a href="../index.htmll" class="btn-sucesso">Entrar na conta</a>
+                <a href="../index.html" class="btn-sucesso">Entrar na conta</a>
             </div>
         </div>
     </div>
 
     <script>
-        // Pega o nome que passamos pela URL
+        // 1. Tenta pegar o nome pela URL (ex: sucesso.html?nome=Joao)
         const urlParams = new URLSearchParams(window.location.search);
-        const nome = urlParams.get('nome');
+        let nome = urlParams.get('nome');
+
+        // 2. Se não estiver na URL, tenta pegar do localStorage (salvo no cadastro.html)
+        if (!nome) {
+            nome = localStorage.getItem("nomeUsuarioCadastrado");
+        }
+
+        // 3. Aplica o nome na tela
         if (nome) {
             document.getElementById('userName').textContent = nome;
         }

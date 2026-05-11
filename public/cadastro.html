@@ -79,19 +79,14 @@
     </div>
 
     <script>
-      // Configuração CORRETA do Supabase (Projeto csaqfeiv...)
       const supabaseUrl = 'https://csaqfeivvtmtjlnwuxql.supabase.co';
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
       const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-      // Função para carregar as faculdades cadastradas no banco
       async function popularFaculdades() {
         try {
-          // Buscando na tabela 'faculdade' (singular)
           const { data, error } = await _supabase.from('faculdade').select('id, nome');
-          
           if (error) throw error;
-
           if (data) {
             const select = document.getElementById('faculdade');
             select.innerHTML = '<option value="" disabled selected>Selecione sua faculdade</option>';
@@ -101,19 +96,15 @@
           }
         } catch (err) {
           console.error("Erro ao carregar faculdades:", err);
-          document.getElementById('faculdade').innerHTML = '<option value="">Erro ao carregar</option>';
         }
       }
 
-      // Inicia a busca assim que a página abre
       document.addEventListener('DOMContentLoaded', popularFaculdades);
 
-      // Aba Login
       document.getElementById("tabLogin").addEventListener("click", function () {
         window.location.href = "../index.html";
       });
 
-      // Lógica de envio do Cadastro
       document.getElementById("cadastroForm").addEventListener("submit", async function(e) {
         e.preventDefault();
         
@@ -131,7 +122,6 @@
         }
 
         try {
-          // 1. Cria o usuário no Auth
           const { data: authData, error: authError } = await _supabase.auth.signUp({
             email: email,
             password: senha,
@@ -140,7 +130,6 @@
           if (authError) throw authError;
 
           if (authData.user) {
-            // 2. Insere os dados adicionais na tabela 'usuarios'
             const { error: dbError } = await _supabase
               .from('usuarios')
               .insert([
@@ -154,10 +143,13 @@
               ]);
 
             if (dbError) throw dbError;
+
+            // --- LINHA MÁGICA PARA O NOME APARECER NO SUCESSO.HTML ---
+            localStorage.setItem("nomeUsuarioCadastrado", nome); 
+            
             window.location.href = "./sucesso.html";
           }
         } catch (error) {
-          console.error("Erro no cadastro:", error);
           alert("Erro ao cadastrar: " + error.message);
         }
       });
