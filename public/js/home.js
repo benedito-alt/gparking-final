@@ -10,73 +10,62 @@ async function checkAuth() {
 
         if (sessionError) throw sessionError;
 
-        // SE NÃO TIVER SESSÃO NO SUPABASE, VERIFICA O LOCALSTORAGE ANTES DE SAIR
+        // SE NÃO TIVER SESSÃO, EXPULSA O USUÁRIO PARA O LOGIN
         if (!session) {
-            const emailSalvo = localStorage.getItem("emailUsuario");
-            if (!emailSalvo) {
-                console.log("Acesso negado. Redirecionando para login...");
-                window.location.href = "index.html"; 
-                return;
-            }
-            // Se tiver e-mail no storage, simulamos o perfil para não travar a página
-            updateUI(true);
+            console.log("Acesso negado. Redirecionando para login...");
+            window.location.href = "../index.html"; 
             return;
         }
 
         const userAuth = session.user;
         
+        // Busca dados atualizados do banco
         const { data: userData, error: dbError } = await _supabase
             .from('usuarios') 
             .select('*, faculdade(nome)')
             .eq('id', userAuth.id)
             .maybeSingle(); 
 
+        if (dbError) {
+            console.error("Erro ao buscar dados do perfil:", dbError.message);
+        }
+
         if (userData) {
+            // Sincroniza o LocalStorage
             localStorage.setItem("nomeUsuario", userData.nome);
             localStorage.setItem("emailUsuario", userAuth.email);
             localStorage.setItem("telefoneUsuario", userData.telefone || "");
             localStorage.setItem("tipoUsuario", userData.tipo_usuario);
             localStorage.setItem("nomeFaculdade", userData.faculdade?.nome || "Não vinculada");
 
-            updateUI(true, userData);
+            showUserProfile(userData);
         }
         
     } catch (err) {
         console.error("Erro crítico:", err.message);
+        window.location.href = "../index.html";
     }
 }
 
-// 3. INTERFACE DO USUÁRIO (MOBILE E DESKTOP)
-function updateUI(isLoggedIn, user = null) {
-    const authButtons = document.getElementById("headerButtons");
-    const userProfile = document.getElementById("userProfile");
-    const mobileAuthItems = document.querySelectorAll(".mobile-only:not(.user-menu-item)");
-    const mobileUserItems = document.querySelectorAll(".user-menu-item");
-
-    if (isLoggedIn) {
-        // Desktop
-        if (authButtons) authButtons.querySelectorAll(".login-btn, .register-btn").forEach(btn => btn.style.display = "none");
-        if (userProfile) userProfile.style.display = "flex";
-
-        // Mobile (Menu Hambúrguer)
-        mobileAuthItems.forEach(item => item.style.display = "none");
-        mobileUserItems.forEach(item => item.style.display = "block");
-
-        // Nome do Usuário
-        const nome = user ? user.nome : localStorage.getItem("nomeUsuario");
-        document.querySelectorAll(".user-name").forEach(el => el.textContent = nome);
-    } else {
-        if (userProfile) userProfile.style.display = "none";
-        mobileUserItems.forEach(item => item.style.display = "none");
-    }
+// 3. INTERFACE DO USUÁRIO
+function showUserProfile(user) {
+    document.querySelectorAll(".login-btn, .register-btn").forEach(btn => btn.style.display = "none");
     
+    const userProfile = document.getElementById("userProfile");
+    if (userProfile) userProfile.style.display = "flex";
+    
+    document.querySelectorAll(".user-name").forEach((element) => {
+        element.textContent = user.nome;
+    });
+
     setupModalEvents();
 }
 
-// 4. GESTÃO DO PERFIL
+// 4. GESTÃO DO PERFIL (EDIÇÃO)
 async function saveProfileChanges() {
     const novoNome = document.getElementById("editNome").value;
     const novoTelefone = document.getElementById("editTelefone").value;
+    
     const { data: { user } } = await _supabase.auth.getUser();
 
     const { error } = await _supabase
@@ -87,8 +76,16 @@ async function saveProfileChanges() {
     if (!error) {
         localStorage.setItem("nomeUsuario", novoNome);
         localStorage.setItem("telefoneUsuario", novoTelefone);
-        alert("Perfil atualizado!");
-        location.reload();
+        
+        document.getElementById("modalUserName").textContent = novoNome;
+        document.getElementById("modalUserPhone").textContent = novoTelefone;
+        document.querySelectorAll(".user-name").forEach(el => el.textContent = novoNome);
+        
+        const btnEditar = document.querySelector(".edit-profile-btn");
+        btnEditar.textContent = "Editar Perfil";
+        btnEditar.style.backgroundColor = ""; 
+        
+        alert("Perfil atualizado com sucesso!");
     }
 }
 
@@ -100,8 +97,8 @@ function setupModalEvents() {
             const telefoneEl = document.getElementById("modalUserPhone");
 
             if (btnEditarPerfil.textContent === "Editar Perfil") {
-                nomeEl.innerHTML = `<input type="text" id="editNome" value="${nomeEl.textContent}" style="width:100%; color:black;">`;
-                telefoneEl.innerHTML = `<input type="text" id="editTelefone" value="${telefoneEl.textContent}" style="width:100%; color:black;">`;
+                nomeEl.innerHTML = `<input type="text" id="editNome" value="${nomeEl.textContent}" style="width:100%; color:black; padding:5px;">`;
+                telefoneEl.innerHTML = `<input type="text" id="editTelefone" value="${telefoneEl.textContent}" style="width:100%; color:black; padding:5px;">`;
                 btnEditarPerfil.textContent = "Confirmar";
                 btnEditarPerfil.style.backgroundColor = "#27ae60";
             } else {
@@ -119,7 +116,8 @@ function openModal() {
     document.getElementById("modalUserEmail").textContent = localStorage.getItem("emailUsuario") || "";
     document.getElementById("modalUserPhone").textContent = localStorage.getItem("telefoneUsuario") || "Não informado";
     document.getElementById("modalUserType").textContent = localStorage.getItem("tipoUsuario") || "";
-    
+    document.getElementById("modalUserFaculdade").textContent = localStorage.getItem("nomeFaculdade") || "Não vinculada";
+
     modal.style.display = "block";
     document.body.style.overflow = "hidden";
 }
@@ -127,13 +125,6 @@ function openModal() {
 // 5. INICIALIZAÇÃO E EVENTOS GLOBAIS
 document.addEventListener("DOMContentLoaded", () => {
     checkAuth();
-
-    // Menu Toggle (MOBILE)
-    const menuToggle = document.getElementById('menuToggle');
-    const navMenu = document.getElementById('navMenu');
-    if (menuToggle && navMenu) {
-        menuToggle.onclick = () => navMenu.classList.toggle('show');
-    }
 
     // Fechar modal
     const closeBtn = document.querySelector(".close-modal");
@@ -144,13 +135,13 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // Logout
+    // Botões de Logout bono 
     document.querySelectorAll("#logoutBtn, #logoutMobile").forEach(btn => {
         btn.onclick = async (e) => {
             e.preventDefault();
             await _supabase.auth.signOut();
             localStorage.clear();
-            window.location.href = "index.html";
+            window.location.href = "../index.html";
         };
     });
 
@@ -158,4 +149,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("#openProfileDropdown, #openProfileMobile").forEach(btn => {
         btn.onclick = (e) => { e.preventDefault(); openModal(); };
     });
+    
+    const estacionarBtn = document.getElementById("estacionarBtn");
+    if (estacionarBtn) {
+        estacionarBtn.onclick = () => window.location.href = "setores.html";
+    }
 });
