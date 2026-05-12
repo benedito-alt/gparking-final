@@ -943,9 +943,11 @@ footer {
     font-size: 1rem;
   }
 
-  .features-section {
+ .features-section {
     padding: 2.5rem 5%;
-    max-height: 70vh;
+    /* Mude de max-height para height: auto */
+    height: auto !important; 
+    max-height: none !important; 
     border-radius: 20px;
   }
 
@@ -1042,7 +1044,8 @@ footer {
 
   .features-section {
     padding: 2rem 1rem;
-    max-height: 65vh;
+    height: auto !important; /* CORRIGIDO */
+    max-height: none !important;
   }
 
   .section-header h2 {
@@ -1053,9 +1056,10 @@ footer {
     gap: 1rem;
   }
 
-  .feature-card {
+ .feature-card {
     padding: 1.5rem;
-    min-height: 380px;
+    min-height: auto !important; /* Deixa o card crescer se o texto for grande */
+    height: auto;
   }
 
   .feature-card-icon {
@@ -1111,9 +1115,10 @@ footer {
     font-size: 0.9rem;
   }
 
-  .features-section {
+ .features-section {
     padding: 1.5rem 1rem;
-    max-height: 60vh;
+    height: auto !important; /* CORRIGIDO */
+    max-height: none !important;
     margin: 1rem auto;
   }
 
