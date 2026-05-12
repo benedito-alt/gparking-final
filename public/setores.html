@@ -58,16 +58,16 @@
             const tipoUsuario = localStorage.getItem("tipoUsuario") || "Aluno";
 
             if (!email) {
-                window.location.href = "../index.html";
+                window.location.href = "index.html";
                 return;
             }
 
             try {
-                // 1. Busca a faculdade do usuário logado
+                // 1. Busca a faculdade do usuário logado usando o e-mail (CORRIGIDO)
                 const { data: usuario, error: userError } = await _supabase
                     .from('usuarios')
                     .select('faculdade_id')
-                    .eq('nome', email)
+                    .eq('email', email) 
                     .single();
 
                 if (userError || !usuario) throw new Error("Erro ao identificar faculdade.");
@@ -103,12 +103,19 @@
                 const porcentagem = (vagasDisponiveis / setor.vagas_totais) * 100;
                 
                 // Lógica de cores baseada na ocupação
-                let corVagas = "#e74c3c"; // Vermelho (Lotadoaa)
-                if (porcentagem > 50) corVagas = "#27ae60"; // Verde (Livre)
-                else if (porcentagem > 15) corVagas = "#f1c40f"; // Amarelo (Moderado)
+                let corVagas = "#e74c3c"; 
+                if (porcentagem > 50) corVagas = "#27ae60"; 
+                else if (porcentagem > 15) corVagas = "#f1c40f"; 
 
                 const isBlocked = setor.acesso_restrito && tipoUsuario === "Aluno";
-                const caracteristicas = Array.isArray(setor.caracteristicas) ? setor.caracteristicas : [];
+                
+                // Ajuste para lidar com características como texto ou array (CORRIGIDO)
+                let listaCaracteristicas = [];
+                if (setor.caracteristicas) {
+                    listaCaracteristicas = Array.isArray(setor.caracteristicas) 
+                        ? setor.caracteristicas 
+                        : [setor.caracteristicas];
+                }
 
                 const card = document.createElement("div");
                 card.className = "sector-option";
@@ -119,13 +126,13 @@
 
                 card.innerHTML = `
                     <div class="sector-letter" style="--sector-color: ${setor.cor || '#333'}">${setor.letra}</div>
-                    <strong>${setor.nome}</strong>
+                    <strong>${setor.nome} ${setor.letra}</strong>
                     <p><span style="color: ${corVagas}; font-weight: bold;">${vagasDisponiveis}</span> vagas disponíveis</p>
                     
                     <div class="sector-info-overlay">
                         <h4>Detalhes do Setor</h4>
                         <ul>
-                            ${caracteristicas.map(c => `<li><i class="fa-solid fa-circle-info"></i> ${c}</li>`).join('')}
+                            ${listaCaracteristicas.map(c => `<li><i class="fa-solid fa-circle-info"></i> ${c}</li>`).join('')}
                         </ul>
                     </div>
                 `;
