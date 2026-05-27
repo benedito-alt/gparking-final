@@ -205,43 +205,58 @@ body {
     margin-bottom: 1rem;
   }
 
-  /* MODIFICADO: Transforma a lista vertical em Grid 2x2 */
+  /* FORÇANDO GRID 2X2: Remove o comportamento de lista vertical */
   .sector-grid {
     display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* Força exatamente 2 colunas */
+    grid-template-rows: auto auto !important;         /* Define as 2 linhas */
+    gap: 12px !important;                             /* Espaçamento entre as caixas */
+    width: 100% !important;
   }
 
-  /* Ajustes nos cards para o modo 2x2 */
+  /* Ajustes nos cards individuais para encaixarem perfeitamente lado a lado */
   .sector-option {
     width: 100% !important;
+    max-width: 100% !important;
     margin: 0 !important;
-    padding: 15px 10px !important;
+    padding: 20px 10px !important; /* Ajusta o espaçamento interno para telas menores */
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
   }
 
+  /* Evita que títulos grandes quebrem as caixas do grid */
   .sector-option h3 {
     font-size: 1.1rem !important;
+    margin-bottom: 5px !important;
   }
 
+  /* Reduz sutilmente o texto de vagas para manter tudo em uma linha só */
+  .sector-option p {
+    font-size: 0.85rem !important;
+  }
+
+  /* Ajuste no overlay roxo de informações para o tamanho 2x2 */
   .sector-info-overlay {
     padding: 10px !important;
   }
   
   .sector-info-overlay h4 {
     font-size: 0.9rem !important;
-    margin-bottom: 5px;
+    margin-bottom: 5px !important;
   }
 
   .sector-info-overlay ul li {
     font-size: 0.75rem !important;
-    margin-bottom: 4px;
+    margin-bottom: 4px !important;
   }
 
   .selection-panel {
     padding: 1rem;
   }
 }
-
 /* ===============================
           ESTADO BLOQUEADO
 =============================== */
