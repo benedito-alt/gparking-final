@@ -205,8 +205,36 @@ body {
     margin-bottom: 1rem;
   }
 
+  /* MODIFICADO: Transforma a lista vertical em Grid 2x2 */
   .sector-grid {
-    grid-template-columns: 1fr;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  /* Ajustes nos cards para o modo 2x2 */
+  .sector-option {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 15px 10px !important;
+  }
+
+  .sector-option h3 {
+    font-size: 1.1rem !important;
+  }
+
+  .sector-info-overlay {
+    padding: 10px !important;
+  }
+  
+  .sector-info-overlay h4 {
+    font-size: 0.9rem !important;
+    margin-bottom: 5px;
+  }
+
+  .sector-info-overlay ul li {
+    font-size: 0.75rem !important;
+    margin-bottom: 4px;
   }
 
   .selection-panel {
@@ -249,13 +277,14 @@ body {
     background: #ccc;
     cursor: not-allowed;
 }
+
 .legenda-container {
   display: flex;
   justify-content: center;
   gap: 20px;
-  margin-top: 30px; /* Espaço após os cards */
+  margin-top: 30px;
   padding-top: 15px;
-  border-top: 1px solid #eee; /* Linha bem fininha para separar */
+  border-top: 1px solid #eee;
   width: 100%;
 }
 
@@ -263,8 +292,8 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.85rem; /* Fonte menor para ser discreta */
-  color: #666; /* Cor de texto suave */
+  font-size: 0.85rem;
+  color: #666;
 }
 
 /* Os pontinhos coloridos */
@@ -282,7 +311,7 @@ body {
 /* Container do Card precisa ser relativo para o overlay funcionar */
 .sector-option {
     position: relative;
-    overflow: hidden; /* Garante que o conteúdo extra não saia das bordas arredondadas */
+    overflow: hidden;
     transition: all 0.3s ease;
 }
 
@@ -293,17 +322,17 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(74, 20, 140, 0.95); /* Roxo do Gparking com transparência */
+    background: rgba(74, 20, 140, 0.95);
     color: white;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 15px;
-    opacity: 0; /* Começa invisível */
+    opacity: 0;
     transition: opacity 0.3s ease;
     text-align: center;
-    pointer-events: none; /* Evita que o overlay atrapalhe cliques se houver */
+    pointer-events: none;
 }
 
 /* Quando passar o mouse no card, mostra o overlay */
@@ -328,20 +357,22 @@ body {
 .sector-info-overlay ul li {
     margin: 5px 0;
 }
+
 /* Se o card estiver bloqueado (Aluno), o overlay pode ser diferente */
 .sector-option.blocked:hover .sector-info-overlay {
-    background: rgba(44, 62, 80, 0.98); /* Um tom mais escuro e sério */
+    background: rgba(44, 62, 80, 0.98);
 }
 
 /* Adiciona um aviso visual extra de bloqueio no topo do overlay do Setor D */
 .sector-option.blocked:hover .sector-info-overlay::before {
-    content: "\f023"; /* Ícone de cadeado do Font Awesome */
+    content: "\f023";
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
     font-size: 2rem;
     margin-bottom: 10px;
-    color: #e74c3c; /* Vermelho alerta */
+    color: #e74c3c;
 }
+
 /* Configuração do Card para suportar o Overlay */
 .sector-option {
     position: relative;
@@ -361,14 +392,14 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(74, 20, 140, 0.95); /* Roxo Gparking */
+    background: rgba(74, 20, 140, 0.95);
     color: white;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 20px;
-    opacity: 0; /* Começa invisível */
+    opacity: 0;
     transition: opacity 0.3s ease;
     text-align: center;
 }
@@ -401,5 +432,5 @@ body {
 
 /* Estilo para o Setor D bloqueado no Hover */
 .sector-option.blocked:hover .sector-info-overlay {
-    background: rgba(50, 50, 50, 0.95); /* Cinza escuro para bloqueado */
+    background: rgba(50, 50, 50, 0.95);
 }
