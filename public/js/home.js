@@ -155,25 +155,71 @@ document.addEventListener("DOMContentLoaded", () => {
         estacionarBtn.onclick = () => window.location.href = "setores.html";
     }
 });
-// ==========================================
-// CONTROLE DO MENU HAMBÚRGUER (MOBILE)
-// ==========================================
-document.addEventListener("DOMContentLoaded", () => {
+// ==========================================================
+// CONTROLE DE NAVEGAÇÃO E SESSÃO MOBILE (GPARKING)
+// ==========================================================
+document.addEventListener("DOMContentLoaded", async () => {
     const menuToggle = document.querySelector(".menu-toggle") || document.getElementById("menuToggle");
     const navMenu = document.getElementById("navMenu");
 
     if (menuToggle && navMenu) {
-        // Abre e fecha o menu ao clicar nos 3 tracinhos
+        // 1. Abre e fecha o menu vertical ao clicar nas 3 barrinhas
         menuToggle.addEventListener("click", (e) => {
             e.stopPropagation();
             navMenu.classList.toggle("show");
         });
 
-        // Fecha o menu se o usuário clicar em qualquer outro lugar da tela
+        // Fecha o menu se o usuário clicar fora dele
         document.addEventListener("click", (e) => {
             if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
                 navMenu.classList.remove("show");
             }
         });
+
+        // 2. CONTROLE ESTADO DE AUTENTICAÇÃO (Mudar botões se logado)
+        if (typeof supabase !== 'undefined') {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            // Captura os elementos exatos do seu HTML
+            const btnEntrar = document.getElementById("entrar")?.parentElement;
+            const btnCriarConta = document.getElementById("criarConta")?.parentElement;
+            const itensUsuarioLogado = document.querySelectorAll(".user-menu-item");
+
+            if (session) {
+                // SE ESTIVER LOGADO:
+                // Esconde "Entrar" e "Criar conta"
+                if (btnEntrar) btnEntrar.style.setProperty("display", "none", "important");
+                if (btnCriarConta) btnCriarConta.style.setProperty("display", "none", "important");
+
+                // Mostra "Ver Perfil" e "Sair" que estavam ocultos
+                itensUsuarioLogado.forEach(item => {
+                    item.style.setProperty("display", "block", "important");
+                });
+
+                // (Opcional) Injeta o nome do usuário no campo correspondente, se houver
+                const userNameSpan = navMenu.querySelector(".user-name");
+                if (userNameSpan && session.user.user_metadata?.name) {
+                    userNameSpan.textContent = session.user.user_metadata.name;
+                }
+
+                // Configura a ação do clique no botão Sair Mobile original
+                const logoutMobileBtn = document.getElementById("logoutMobile");
+                if (logoutMobileBtn) {
+                    logoutMobileBtn.addEventListener("click", async (e) => {
+                        e.preventDefault();
+                        await supabase.auth.signOut();
+                        window.location.href = "home.html"; // Recarrega a página deslogado
+                    });
+                }
+            } else {
+                // SE NÃO ESTIVER LOGADO:
+                // Garante que os botões de login apareçam e os de perfil sumam
+                if (btnEntrar) btnEntrar.style.setProperty("display", "block", "important");
+                if (btnCriarConta) btnCriarConta.style.setProperty("display", "block", "important");
+                itensUsuarioLogado.forEach(item => {
+                    item.style.setProperty("display", "none", "important");
+                });
+            }
+        }
     }
 });
