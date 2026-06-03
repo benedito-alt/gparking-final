@@ -823,7 +823,94 @@ footer {
   }
 }
 
-/* MOBILE PEQUENO (600px para baixo) */
+/* ==========================================================
+   ESTILOS RESPONSIVOS E ADAPTAÇÕES MOBILE (GPARKING)
+   ========================================================== */
+
+/* TELAS INTERMEDIÁRIAS E DISPOSITIVOS MÓVEIS (Até 992px) */
+@media (max-width: 992px) {
+  /* TRANSFORMA O MENU EM CARROSSEL HORIZONTAL NO TOPO */
+  #navMenu {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important; /* Cria a barra de rolagem horizontal */
+    white-space: nowrap !important; /* Impede os links de quebrarem linha */
+    gap: 12px !important; /* Espaçamento entre os links */
+    padding: 10px 15px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    list-style: none !important;
+    position: static !important; /* Remove o comportamento flutuante antigo */
+    box-shadow: none !important;
+    scrollbar-width: none; /* Oculta a barra de rolagem no Firefox */
+  }
+  
+  /* Oculta a barra de rolagem visual no Chrome, Safari e Edge */
+  #navMenu::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Estilização dos itens e links internos do Carrossel */
+  #navMenu li {
+    display: inline-block !important;
+    margin: 0 !important;
+  }
+
+  #navMenu li a {
+    color: rgba(255, 255, 255, 0.85) !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important; /* Formato pílula */
+    background-color: rgba(255, 255, 255, 0.12) !important; /* Fundo translúcido suave */
+    font-size: 0.85rem !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    transition: all 0.2s ease;
+  }
+
+  /* Estado ativo/página atual no celular */
+  #navMenu li a.active, #navMenu li a:active {
+    background-color: #ffffff !important;
+    color: #4a148c !important; /* Roxo principal */
+    font-weight: 600 !important;
+  }
+
+  /* Mantém o botão dos 3 tracinhos para ações de perfil */
+  .menu-toggle {
+    display: block !important;
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: white;
+  }
+
+  /* Ajuste de transição para os botões do cabeçalho */
+  nav ul.show + .header-buttons {
+    display: none;
+  }
+  
+  .header-buttons {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--dark);
+    padding: 1rem 0;
+    gap: 0.5rem;
+  }
+  
+  .header-buttons.show {
+    display: flex;
+  }
+  
+  .header-btn {
+    margin: 0.3rem 2rem;
+    padding: 0.8rem;
+    text-align: center;
+  }
+}
+
+/* SMARTPHONES ATÉ 600px */
 @media (max-width: 600px) {
   .hero h1 {
     font-size: 2.2rem;
@@ -852,7 +939,7 @@ footer {
   }
 }
 
-/* MOBILE MUITO PEQUENO (480px para baixo) */
+/* DISPOSITIVOS MUITO PEQUENOS (Até 480px) */
 @media (max-width: 480px) {
   header {
     padding: 1rem 5%;
@@ -875,12 +962,17 @@ footer {
     font-size: 0.9rem;
   }
 
+  /* Oculta os links rápidos redundantes no rodapé mobile */
+  .footer-section.desktop-only {
+    display: none !important;
+  }
+
   .footer-section {
     min-width: 100%;
   }
 }
 
-/* CORREÇÃO: Em telas grandes, esconder itens mobile */
+/* COMPORTAMENTO PARA TELAS GRANDES (Desktop) */
 @media (min-width: 993px) {
   .mobile-only {
     display: none !important;
@@ -889,73 +981,43 @@ footer {
   .user-profile {
     display: flex;
   }
-}
 
-/* CORREÇÃO: Garantir que os botões sempre apareçam no desktop */
-@media (min-width: 993px) {
   .header-buttons {
     display: flex !important;
   }
 }
 
-/* CORREÇÃO: Ajuste para quando o menu mobile está aberto */
-@media (max-width: 992px) {
-  nav ul.show + .header-buttons {
-    display: none;
-  }
-  
-  /* Garantir que os botões de login/cadastro apareçam corretamente no mobile */
-  .header-buttons {
-    display: none;
-    flex-direction: column;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background: var(--dark);
-    padding: 1rem 0;
-    gap: 0.5rem;
-  }
-  
-  .header-buttons.show {
-    display: flex;
-  }
-  
-  .header-btn {
-    margin: 0.3rem 2rem;
-    padding: 0.8rem;
-    text-align: center;
-  }
-}
-
+/* ==========================================================
+   ESTILOS GERAIS DE AVATAR E FORMULÁRIOS
+   ========================================================== */
 .profile-avatar img, .user-avatar, .user-avatar-small {
-    object-fit: cover; /* Não deixa a foto esticar */
-    border-radius: 50%; /* Garante que fique redondo */
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .change-avatar-btn {
-    cursor: pointer;
-    margin-top: 10px;
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    background: #f9f9f9;
-    border-radius: 5px;
-    font-size: 0.8rem;
+  cursor: pointer;
+  margin-top: 10px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  border-radius: 5px;
+  font-size: 0.8rem;
 }
 
 .change-avatar-btn:hover {
-    background: #e0e0e0;
+  background: #e0e0e0;
 }
 
 .info-group input {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 5px;
-    font-family: 'Poppins', sans-serif;
-    color: #4a148c;
-    outline: none;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 5px;
+  font-family: 'Poppins', sans-serif;
+  color: #4a148c;
+  outline: none;
 }
 
 .info-group input:focus {
-    border-color: #7421f0;
+  border-color: #7421f0;
 }
