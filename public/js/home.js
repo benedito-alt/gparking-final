@@ -180,23 +180,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (typeof supabase !== 'undefined') {
             const { data: { session } } = await supabase.auth.getSession();
 
-            // Captura os elementos exatos do seu HTML
-            const btnEntrar = document.getElementById("entrar")?.parentElement;
-            const btnCriarConta = document.getElementById("criarConta")?.parentElement;
+            // CAPTURA FORÇADA: Busca as tags <li> diretamente que contêm os IDs internos
+            const liEntrar = document.querySelector('#navMenu li:has(#entrar)') || document.getElementById("entrar")?.closest('li');
+            const liCriarConta = document.querySelector('#navMenu li:has(#criarConta)') || document.getElementById("criarConta")?.closest('li');
             const itensUsuarioLogado = document.querySelectorAll(".user-menu-item");
 
             if (session) {
                 // SE ESTIVER LOGADO:
-                // Esconde "Entrar" e "Criar conta"
-                if (btnEntrar) btnEntrar.style.setProperty("display", "none", "important");
-                if (btnCriarConta) btnCriarConta.style.setProperty("display", "none", "important");
+                // Força o desaparecimento completo de "Entrar" e "Criar conta"
+                if (liEntrar) liEntrar.setAttribute("style", "display: none !important;");
+                if (liCriarConta) liCriarConta.setAttribute("style", "display: none !important;");
 
-                // Mostra "Ver Perfil" e "Sair" que estavam ocultos
+                // Mostra os botões escondidos de perfil e sair
                 itensUsuarioLogado.forEach(item => {
-                    item.style.setProperty("display", "block", "important");
+                    item.setAttribute("style", "display: block !important;");
                 });
 
-                // (Opcional) Injeta o nome do usuário no campo correspondente, se houver
+                // Injeta o nome do usuário no campo correspondente
                 const userNameSpan = navMenu.querySelector(".user-name");
                 if (userNameSpan && session.user.user_metadata?.name) {
                     userNameSpan.textContent = session.user.user_metadata.name;
@@ -213,11 +213,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             } else {
                 // SE NÃO ESTIVER LOGADO:
-                // Garante que os botões de login apareçam e os de perfil sumam
-                if (btnEntrar) btnEntrar.style.setProperty("display", "block", "important");
-                if (btnCriarConta) btnCriarConta.style.setProperty("display", "block", "important");
+                if (liEntrar) liEntrar.setAttribute("style", "display: block !important;");
+                if (liCriarConta) liCriarConta.setAttribute("style", "display: block !important;");
+                
                 itensUsuarioLogado.forEach(item => {
-                    item.style.setProperty("display", "none", "important");
+                    item.setAttribute("style", "display: none !important;");
                 });
             }
         }
