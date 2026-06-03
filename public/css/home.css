@@ -713,46 +713,66 @@ footer {
   }
 }
 
-/* ===============================
-         RESPONSIVIDADE
-      =============================== */
+/* ==========================================================
+   ESTILOS RESPONSIVOS E ADAPTAÇÕES MOBILE (GPARKING)
+   ========================================================== */
 
-/* TABLET (992px para baixo) */
+/* DISPOSITIVOS MÓVEIS E TABLETS (Até 992px) */
 @media (max-width: 992px) {
+  /* Mantém o botão dos 3 tracinhos no topo direito para ações de perfil */
   .menu-toggle {
-    display: block;
+    display: block !important;
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: white;
   }
 
-  nav ul {
+  /* TRANSFORMA O MENU EM CARROSSEL HORIZONTAL NO TOPO */
+  #navMenu {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important; /* Cria a barra de rolagem horizontal */
+    white-space: nowrap !important; /* Impede os links de quebrarem linha */
+    gap: 12px !important; /* Espaçamento entre as pílulas */
+    padding: 10px 15px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    list-style: none !important;
+    position: static !important; /* Remove o comportamento flutuante antigo */
+    box-shadow: none !important;
+    background: transparent !important;
+    scrollbar-width: none; /* Oculta a barra de rolagem no Firefox */
+  }
+  
+  /* Oculta a barra de rolagem visual no Chrome, Safari e Edge */
+  #navMenu::-webkit-scrollbar {
     display: none;
-    flex-direction: column;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background: var(--dark);
-    padding: 1rem 0;
-    text-align: left;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
-  nav ul.show {
-    display: flex;
+  /* Estilização dos itens e links internos do Carrossel */
+  #navMenu li {
+    display: inline-block !important;
+    margin: 0 !important;
+    width: auto !important;
   }
 
-  nav ul li {
-    width: 100%;
-    margin: 0;
+  #navMenu li a {
+    color: rgba(255, 255, 255, 0.85) !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important; /* Formato pílula */
+    background-color: rgba(255, 255, 255, 0.12) !important; /* Fundo translúcido suave */
+    font-size: 0.85rem !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    width: auto !important;
+    transition: all 0.2s ease;
   }
 
-  nav ul li a {
-    display: block;
-    padding: 12px 20px;
-    width: 100%;
-  }
-
-  .mobile-only {
-    display: block;
+  /* Estado ativo/página atual no celular */
+  #navMenu li a.active, #navMenu li a:active {
+    background-color: #ffffff !important;
+    color: #4a148c !important; /* Roxo principal */
+    font-weight: 600 !important;
   }
 
   .hero {
@@ -774,13 +794,40 @@ footer {
     max-width: 400px;
   }
 
-  /* Ajustes para o perfil do usuário no mobile */
+  /* Oculta o perfil padrão do desktop no fluxo mobile */
   .user-profile {
     display: none;
   }
+
+  /* Ajuste de transição para os botões do cabeçalho */
+  nav ul.show + .header-buttons {
+    display: none;
+  }
+  
+  .header-buttons {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--dark);
+    padding: 1rem 0;
+    gap: 0.5rem;
+  }
+  
+  .header-buttons.show {
+    display: flex;
+  }
+  
+  .header-btn {
+    margin: 0.3rem 2rem;
+    padding: 0.8rem;
+    text-align: center;
+  }
 }
 
-/* MOBILE (768px para baixo) */
+/* SMARTPHONES (768px para baixo) */
 @media (max-width: 768px) {
   .hero h1 {
     font-size: 2.5rem;
@@ -821,92 +868,66 @@ footer {
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
   }
-}
 
-/* ==========================================================
-   ESTILOS RESPONSIVOS E ADAPTAÇÕES MOBILE (GPARKING)
-   ========================================================== */
-
-/* TELAS INTERMEDIÁRIAS E DISPOSITIVOS MÓVEIS (Até 992px) */
-@media (max-width: 992px) {
-  /* TRANSFORMA O MENU EM CARROSSEL HORIZONTAL NO TOPO */
-  #navMenu {
-    display: flex !important;
-    flex-direction: row !important;
-    overflow-x: auto !important; /* Cria a barra de rolagem horizontal */
-    white-space: nowrap !important; /* Impede os links de quebrarem linha */
-    gap: 12px !important; /* Espaçamento entre os links */
-    padding: 10px 15px !important;
-    margin: 0 !important;
-    width: 100% !important;
-    list-style: none !important;
-    position: static !important; /* Remove o comportamento flutuante antigo */
-    box-shadow: none !important;
-    scrollbar-width: none; /* Oculta a barra de rolagem no Firefox */
-  }
-  
-  /* Oculta a barra de rolagem visual no Chrome, Safari e Edge */
-  #navMenu::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Estilização dos itens e links internos do Carrossel */
-  #navMenu li {
-    display: inline-block !important;
-    margin: 0 !important;
-  }
-
-  #navMenu li a {
-    color: rgba(255, 255, 255, 0.85) !important;
-    padding: 8px 16px !important;
-    border-radius: 20px !important; /* Formato pílula */
-    background-color: rgba(255, 255, 255, 0.12) !important; /* Fundo translúcido suave */
-    font-size: 0.85rem !important;
-    text-decoration: none !important;
-    display: inline-block !important;
-    transition: all 0.2s ease;
-  }
-
-  /* Estado ativo/página atual no celular */
-  #navMenu li a.active, #navMenu li a:active {
-    background-color: #ffffff !important;
-    color: #4a148c !important; /* Roxo principal */
-    font-weight: 600 !important;
-  }
-
-  /* Mantém o botão dos 3 tracinhos para ações de perfil */
-  .menu-toggle {
-    display: block !important;
-    cursor: pointer;
-    font-size: 1.4rem;
-    color: white;
-  }
-
-  /* Ajuste de transição para os botões do cabeçalho */
-  nav ul.show + .header-buttons {
-    display: none;
-  }
-  
-  .header-buttons {
-    display: none;
+  /* ==========================================================
+     FORÇANDO GRID 2X2 DOS SETORES NO MOBILE
+     ========================================================== */
+  .selection-card {
     flex-direction: column;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background: var(--dark);
-    padding: 1rem 0;
-    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .info-panel {
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .sector-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* Força exatamente 2 colunas */
+    grid-template-rows: auto auto !important;         /* Define as 2 linhas */
+    gap: 12px !important;                             /* Espaçamento entre as caixas */
+    width: 100% !important;
+  }
+
+  .sector-option {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 20px 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+
+  .sector-option h3 {
+    font-size: 1.1rem !important;
+    margin-bottom: 5px !important;
+  }
+
+  .sector-option p {
+    font-size: 0.85rem !important;
+  }
+
+  .sector-info-overlay {
+    padding: 10px !important;
   }
   
-  .header-buttons.show {
-    display: flex;
+  .sector-info-overlay h4 {
+    font-size: 0.9rem !important;
+    margin-bottom: 5px !important;
   }
-  
-  .header-btn {
-    margin: 0.3rem 2rem;
-    padding: 0.8rem;
-    text-align: center;
+
+  .sector-info-overlay ul li {
+    font-size: 0.75rem !important;
+    margin-bottom: 4px !important;
+  }
+
+  .selection-panel {
+    padding: 1rem;
   }
 }
 
