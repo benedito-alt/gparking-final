@@ -155,3 +155,25 @@ document.addEventListener("DOMContentLoaded", () => {
         estacionarBtn.onclick = () => window.location.href = "setores.html";
     }
 });
+// ==========================================
+// CONTROLE DO MENU HAMBÚRGUER (MOBILE)
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    const menuToggle = document.querySelector(".menu-toggle") || document.getElementById("menuToggle");
+    const navMenu = document.getElementById("navMenu");
+
+    if (menuToggle && navMenu) {
+        // Abre e fecha o menu ao clicar nos 3 tracinhos
+        menuToggle.addEventListener("click", (e) => {
+            e.stopPropagation();
+            navMenu.classList.toggle("show");
+        });
+
+        // Fecha o menu se o usuário clicar em qualquer outro lugar da tela
+        document.addEventListener("click", (e) => {
+            if (!navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                navMenu.classList.remove("show");
+            }
+        });
+    }
+});
