@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // CONTROLE DE NAVEGAÇÃO E SESSÃO MOBILE (GPARKING)
 // ==========================================================
 document.addEventListener("DOMContentLoaded", async () => {
-    const menuToggle = document.querySelector(".menu-toggle") || document.getElementById("menuToggle");
+    const menuToggle = document.getElementById("menuToggle");
     const navMenu = document.getElementById("navMenu");
 
     if (menuToggle && navMenu) {
@@ -176,48 +176,54 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
 
-        // 2. CONTROLE ESTADO DE AUTENTICAÇÃO (Mudar botões se logado)
+        // 2. CONTROLE TOTAL DO ESTADO DE AUTENTICAÇÃO MOBILE
         if (typeof supabase !== 'undefined') {
             const { data: { session } } = await supabase.auth.getSession();
 
-            // Captura os elementos de forma direta e sem margem de erro
-            const linksAutenticacao = document.querySelectorAll(".auth-route");
+            // Seleciona as tags <li> de forma ultra robusta via ID do link interno
+            const linkEntrar = document.getElementById("entrar");
+            const linkCriarConta = document.getElementById("criarConta");
+            const liEntrar = linkEntrar ? linkEntrar.closest('li') : null;
+            const liCriarConta = linkCriarConta ? linkCriarConta.closest('li') : null;
+            
             const itensUsuarioLogado = document.querySelectorAll(".user-menu-item");
 
             if (session) {
-                // SE ESTIVER LOGADO:
-                // Oculta completamente "Entrar" e "Criar conta"
-                linksAutenticacao.forEach(link => {
-                    link.style.cssText = "display: none !important;";
-                });
+                // SE USUÁRIO LOGADO: Sumir com Entrar e Criar Conta sem deixar rastros
+                if (liEntrar) liEntrar.style.setProperty("display", "none", "important");
+                if (liCriarConta) liCriarConta.style.setProperty("display", "none", "important");
 
-                // Exibe de forma forçada "Ver Perfil" e "Sair"
+                // Mostrar dados do Perfil e Sair no mobile
                 itensUsuarioLogado.forEach(item => {
-                    item.style.cssText = "display: block !important;";
+                    item.style.setProperty("display", "block", "important");
                 });
 
-                // Injeta o nome do usuário no campo correspondente
-                const userNameSpan = navMenu.querySelector(".user-name");
-                if (userNameSpan && session.user.user_metadata?.name) {
-                    userNameSpan.textContent = session.user.user_metadata.name;
-                }
+                // Injeta nome do usuário logado se as tabelas estiverem preenchidas
+                const userNameSpans = document.querySelectorAll(".user-name");
+                userNameSpans.forEach(span => {
+                    if (session.user.user_metadata?.name) {
+                        span.textContent = session.user.user_metadata.name;
+                    } else if (session.user.email) {
+                        span.textContent = session.user.email.split('@')[0]; // Fallback para o email se não tiver nome cadastrado
+                    }
+                });
 
-                // Configura a ação do clique no botão Sair Mobile original
-                const logoutMobileBtn = document.getElementById("logoutMobile");
-                if (logoutMobileBtn) {
-                    logoutMobileBtn.addEventListener("click", async (e) => {
+                // Vincula evento de Logout Mobile nativo
+                const logoutMobile = document.getElementById("logoutMobile");
+                if (logoutMobile) {
+                    logoutMobile.addEventListener("click", async (e) => {
                         e.preventDefault();
                         await supabase.auth.signOut();
                         window.location.href = "home.html";
                     });
                 }
             } else {
-                // SE NÃO ESTIVER LOGADO:
-                linksAutenticacao.forEach(link => {
-                    link.style.cssText = "display: block !important;";
-                });
+                // SE NÃO LOGADO: Volta ao visual original do app
+                if (liEntrar) liEntrar.style.setProperty("display", "block", "important");
+                if (liCriarConta) liCriarConta.style.setProperty("display", "block", "important");
+                
                 itensUsuarioLogado.forEach(item => {
-                    item.style.cssText = "display: none !important;";
+                    item.style.setProperty("display", "none", "important");
                 });
             }
         }

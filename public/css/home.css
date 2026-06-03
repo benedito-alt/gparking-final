@@ -729,7 +729,7 @@ footer {
 
   /* O MENU COMEÇA ESCONDIDO E VIRA UMA LISTA VERTICAL FLUTUANTE */
   #navMenu {
-    display: none; /* Começa oculto */
+    display: none; 
     flex-direction: column !important;
     position: absolute !important;
     top: 100% !important;
@@ -774,25 +774,28 @@ footer {
     font-weight: 600;
   }
 
-  /* Garante que os itens exclusivos do mobile apareçam na lista vertical */
+  /* Exibe itens mobile apenas quando necessário */
   .mobile-only {
-    display: block !important;
+    display: block;
   }
 
-  /* Estilização específica do bloco de perfil dentro do menu hambúrguer */
+  /* Estilização do perfil dentro do menu hamburguer */
   .user-profile-mobile {
     display: flex !important;
     align-items: center !important;
     gap: 12px !important;
+    padding: 14px 24px !important;
   }
 
   .user-avatar-small {
     width: 35px;
     height: 35px;
+    border-radius: 50%;
     border: 2px solid white;
+    object-fit: cover;
   }
 
-  /* Ajustes da seção de apresentação (Hero) */
+  /* Ajustes da seção Hero */
   .hero {
     flex-direction: column;
     text-align: center;
@@ -812,32 +815,18 @@ footer {
     max-width: 400px;
   }
 
-  /* Oculta a caixinha flutuante de perfil do desktop */
+  /* Oculta os elementos padrões do desktop */
   .user-profile {
     display: none !important;
   }
 
-  /* Esconde os botões padrão do cabeçalho desktop para não embolar */
   .header-buttons {
     display: none !important;
   }
 }
 
-/* SMARTPHONES (768px para baixo) - Mantendo o grid 2x2 dos setores */
+/* SMARTPHONES (768px para baixo) */
 @media (max-width: 768px) {
-  .hero h1 {
-    font-size: 2.5rem;
-  }
-
-  .hero p {
-    font-size: 1rem;
-  }
-
-  .btn {
-    padding: 0.8rem 2rem;
-    font-size: 1rem;
-  }
-
   .footer-content {
     flex-direction: column;
     gap: 2.5rem;
@@ -847,81 +836,8 @@ footer {
     text-align: center;
   }
 
-  .footer-section h3::after {
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .social-links {
-    justify-content: center;
-  }
-
   .logo-text {
     font-size: 1.3rem;
-  }
-
-  /* CONFIGURAÇÃO DO GRID 2X2 PARA OS SETORES */
-  .sector-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
-    width: 100% !important;
-  }
-
-  .sector-option {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 20px 10px !important;
-    box-sizing: border-box !important;
-  }
-}
-
-/* SMARTPHONES PEQUENOS (Até 600px) */
-@media (max-width: 600px) {
-  .hero h1 {
-    font-size: 2.2rem;
-  }
-
-  .hero-image {
-    max-width: 300px;
-  }
-
-  .logo-icon {
-    width: 40px;
-    height: 40px;
-  }
-
-  .logo-text {
-    font-size: 1.2rem;
-  }
-}
-
-/* DISPOSITIVOS EXTREMAMENTE PEQUENOS (Até 480px) */
-@media (max-width: 480px) {
-  header {
-    padding: 1rem 5%;
-  }
-
-  .hero {
-    padding: 2rem 5%;
-  }
-
-  .hero h1 {
-    font-size: 2rem;
-  }
-
-  .hero p {
-    font-size: 0.9rem;
-  }
-
-  /* Oculta os links rápidos do rodapé se a classe desktop-only estiver lá */
-  .footer-section.desktop-only {
-    display: none !important;
-  }
-
-  .footer-section {
-    min-width: 100%;
   }
 }
 
@@ -940,37 +856,8 @@ footer {
   }
 }
 
-/* ==========================================================
-   ESTILOS GERAIS DE AVATAR E FORMULÁRIOS
-   ========================================================== */
+/* AVATARES GERAIS */
 .profile-avatar img, .user-avatar, .user-avatar-small {
   object-fit: cover;
   border-radius: 50%;
-}
-
-.change-avatar-btn {
-  cursor: pointer;
-  margin-top: 10px;
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  background: #f9f9f9;
-  border-radius: 5px;
-  font-size: 0.8rem;
-}
-
-.change-avatar-btn:hover {
-  background: #e0e0e0;
-}
-
-.info-group input {
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 5px;
-  font-family: 'Poppins', sans-serif;
-  color: #4a148c;
-  outline: none;
-}
-
-.info-group input:focus {
-  border-color: #7421f0;
 }
