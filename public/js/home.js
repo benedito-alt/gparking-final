@@ -180,20 +180,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (typeof supabase !== 'undefined') {
             const { data: { session } } = await supabase.auth.getSession();
 
-            // CAPTURA FORÇADA: Busca as tags <li> diretamente que contêm os IDs internos
-            const liEntrar = document.querySelector('#navMenu li:has(#entrar)') || document.getElementById("entrar")?.closest('li');
-            const liCriarConta = document.querySelector('#navMenu li:has(#criarConta)') || document.getElementById("criarConta")?.closest('li');
+            // Captura os elementos de forma direta e sem margem de erro
+            const linksAutenticacao = document.querySelectorAll(".auth-route");
             const itensUsuarioLogado = document.querySelectorAll(".user-menu-item");
 
             if (session) {
                 // SE ESTIVER LOGADO:
-                // Força o desaparecimento completo de "Entrar" e "Criar conta"
-                if (liEntrar) liEntrar.setAttribute("style", "display: none !important;");
-                if (liCriarConta) liCriarConta.setAttribute("style", "display: none !important;");
+                // Oculta completamente "Entrar" e "Criar conta"
+                linksAutenticacao.forEach(link => {
+                    link.style.cssText = "display: none !important;";
+                });
 
-                // Mostra os botões escondidos de perfil e sair
+                // Exibe de forma forçada "Ver Perfil" e "Sair"
                 itensUsuarioLogado.forEach(item => {
-                    item.setAttribute("style", "display: block !important;");
+                    item.style.cssText = "display: block !important;";
                 });
 
                 // Injeta o nome do usuário no campo correspondente
@@ -208,16 +208,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                     logoutMobileBtn.addEventListener("click", async (e) => {
                         e.preventDefault();
                         await supabase.auth.signOut();
-                        window.location.href = "home.html"; // Recarrega a página deslogado
+                        window.location.href = "home.html";
                     });
                 }
             } else {
                 // SE NÃO ESTIVER LOGADO:
-                if (liEntrar) liEntrar.setAttribute("style", "display: block !important;");
-                if (liCriarConta) liCriarConta.setAttribute("style", "display: block !important;");
-                
+                linksAutenticacao.forEach(link => {
+                    link.style.cssText = "display: block !important;";
+                });
                 itensUsuarioLogado.forEach(item => {
-                    item.setAttribute("style", "display: none !important;");
+                    item.style.cssText = "display: none !important;";
                 });
             }
         }
