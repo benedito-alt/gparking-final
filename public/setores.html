@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gparking - Seleção de Setor</title>
+    <link rel="shortcut icon" href="img/Logo.png">
+    <link rel="stylesheet" href="css/setores.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body>
+    <main class="selection-card">
+        <section class="info-panel">
+            <a href="home.html" class="arrow" title="Voltar para Home"><i class="fa-solid fa-arrow-left"></i></a>
+            <div class="logo-mini" style="margin-bottom: 20px;">
+                <img src="img/Logo.png" alt="Logo Gparking" style="width: 50px;"/>
+            </div>
+            <h2>Verifique o setor mais livre e economize tempo ao estacionar.</h2>
+            <img src="img/Carro.png" class="info-image" alt="Carro Gparking" />
+        </section>
+
+        <section class="selection-panel">
+            <h3>Vagas em Tempo Real</h3>
+            <div class="sector-grid" id="sectorContainer">
+                <p style="color: #666;">Carregando setores...</p>
+            </div>
+
+            <div class="legenda-container">
+                <div class="legenda-item"><span class="dot verde"></span><span>Livre</span></div>
+                <div class="legenda-item"><span class="dot amarelo"></span><span>Moderado</span></div>
+                <div class="legenda-item"><span class="dot vermelho"></span><span>Lotado</span></div>
+            </div>
+        </section>
+    </main>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        const supabaseUrl = 'https://csaqfeivvtmtjlnwuxql.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
+        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        function mostrarAviso(mensagem, tipo = "erro") {
+            Toastify({
+                text: mensagem,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                style: { background: tipo === "erro" ? "#e74c3c" : "#4a148c", borderRadius: "8px" },
+            }).showToast();
+        }
+
+        async function init() {
+            const email = localStorage.getItem("emailUsuario");
+            const tipoUsuario = localStorage.getItem("tipoUsuario") || "Aluno";
+
+            if (!email) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            try {
+                // 1. Busca a faculdade do usuário logado usando o e-mail (CORRIGIDO)
+               // Procure estas linhas e garanta que fiquem exatamente assim:
+                  const { data: usuario, error: userError } = await _supabase
+                    .from('usuarios')
+                    .select('faculdade_id')
+                    .eq('email', email) // Aqui deve ser 'email', não 'nome'!
+                    .single();
+                if (userError || !usuario) throw new Error("Erro ao identificar faculdade.");
+
+                // 2. Busca os setores vinculados a essa faculdade
+                const { data: setores, error: setorError } = await _supabase
+                    .from('setores')
+                    .select('*')
+                    .eq('faculdade_id', usuario.faculdade_id)
+                    .order('letra', { ascending: true });
+
+                if (setorError) throw setorError;
+
+                renderizarSetores(setores, tipoUsuario);
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById("sectorContainer").innerHTML = "<p>Erro ao carregar dados.</p>";
+            }
+        }
+
+        function renderizarSetores(setores, tipoUsuario) {
+            const container = document.getElementById("sectorContainer");
+            container.innerHTML = "";
+
+            if (setores.length === 0) {
+                container.innerHTML = "<p>Nenhum setor cadastrado para sua instituição.</p>";
+                return;
+            }
+
+            setores.forEach(setor => {
+                const vagasDisponiveis = setor.vagas_totais - setor.vagas_ocupadas;
+                const porcentagem = (vagasDisponiveis / setor.vagas_totais) * 100;
+                
+                // Lógica de cores baseada na ocupação
+                let corVagas = "#e74c3c"; 
+                if (porcentagem > 50) corVagas = "#27ae60"; 
+                else if (porcentagem > 15) corVagas = "#f1c40f"; 
+
+                const isBlocked = setor.acesso_restrito && tipoUsuario === "Aluno";
+                
+                // Ajuste para lidar com características como texto ou array (CORRIGIDO)
+                let listaCaracteristicas = [];
+                if (setor.caracteristicas) {
+                    listaCaracteristicas = Array.isArray(setor.caracteristicas) 
+                        ? setor.caracteristicas 
+                        : [setor.caracteristicas];
+                }
+
+                const card = document.createElement("div");
+                card.className = "sector-option";
+                if (isBlocked) {
+                    card.style.opacity = "0.5";
+                    card.style.cursor = "not-allowed";
+                }
+
+                card.innerHTML = `
+                    <div class="sector-letter" style="--sector-color: ${setor.cor || '#333'}">${setor.letra}</div>
+                    <strong>${setor.nome} ${setor.letra}</strong>
+                    <p><span style="color: ${corVagas}; font-weight: bold;">${vagasDisponiveis}</span> vagas disponíveis</p>
+                    
+                    <div class="sector-info-overlay">
+                        <h4>Detalhes do Setor</h4>
+                        <ul>
+                            ${listaCaracteristicas.map(c => `<li><i class="fa-solid fa-circle-info"></i> ${c}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+
+                card.onclick = () => {
+                    if (isBlocked) {
+                        mostrarAviso(`⚠️ O ${setor.nome} é exclusivo para Colaboradores.`, "erro");
+                    }
+                };
+
+                container.appendChild(card);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
+    </script>
+</body>
+</html>

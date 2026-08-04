@@ -1,0 +1,349 @@
+/* ===============================
+   RESET & BASE
+=============================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  height: 100vh;
+  background: linear-gradient(135deg, #b92bff, #7f35ff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* ===============================
+   CONTAINER PRINCIPAL
+=============================== */
+.container {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  height: auto;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* ===============================
+   LADO ESQUERDO
+=============================== */
+.left {
+  flex: 1;
+  background: linear-gradient(135deg, #7421f0, #a22ff3);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+  position: relative;
+}
+
+/* Container para logo e texto lado a lado */
+.logo-text-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 40px;
+  max-width: 100%;
+}
+
+.left .logo {
+  flex-shrink: 0;
+}
+
+.left .logo img {
+  width: 80px;
+  height: auto;
+}
+
+.left h1 {
+  font-size: 1.8rem;
+  line-height: 1.4;
+  font-weight: 600;
+  text-align: left;
+  flex: 1;
+  margin: 0;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.left img {
+  width: 90%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+}
+
+/* ===============================
+   LADO DIREITO
+=============================== */
+.right {
+  flex: 1;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+}
+
+/* Logo Superior */
+.icon-top {
+  margin-bottom: 10px;
+}
+
+.icon-top img {
+  width: 140px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Título */
+.form-container h2 {
+  color: #4a148c;
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin-bottom: 25px;
+  line-height: 1.3;
+}
+
+.form-container h2 span {
+  color: #4a148c;
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+
+/* ===============================
+   TABS
+=============================== */
+.tabs {
+  display: flex;
+  justify-content: center;
+  background: #f3f3f3;
+  border-radius: 8px;
+  margin: 20px 0 30px 0;
+  overflow: hidden;
+  padding: 4px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  background: transparent;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  border-radius: 6px;
+}
+
+.tab.active {
+  background: #7421f0;
+  color: #fff;
+  box-shadow: 0 2px 5px rgba(116, 33, 240, 0.3);
+}
+
+.tab.inactive {
+  color: #999;
+}
+
+.tab.inactive:hover {
+  color: #7421f0;
+  background: rgba(116, 33, 240, 0.1);
+}
+
+/* ===============================
+   FORMULÁRIO
+=============================== */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  position: relative;
+}
+
+input {
+  width: 100%;
+  padding: 14px 12px;
+  border: none;
+  border-bottom: 2px solid #e0e0e0;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: #fafafa;
+  border-radius: 4px 4px 0 0;
+}
+
+input:focus {
+  outline: none;
+  border-color: #7421f0;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(116, 33, 240, 0.1);
+}
+
+/* Botão */
+.btn {
+  background: #7421f0;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1rem;
+  margin-top: 10px;
+  box-shadow: 0 4px 10px rgba(116, 33, 240, 0.3);
+}
+
+.btn:hover {
+  background: #5e12d9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(116, 33, 240, 0.4);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* ===============================
+   TEXTO FINAL
+=============================== */
+.login-text {
+  margin-top: 25px;
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.login-text a {
+  color: #7421f0;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.login-text a:hover {
+  text-decoration: underline;
+  color: #5e12d9;
+}
+
+/* ===============================
+   RESPONSIVIDADE
+=============================== */
+@media (max-width: 950px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+    max-width: 95%;
+  }
+
+  .left,
+  .right {
+    width: 100%;
+    padding: 40px 30px;
+  }
+
+  .left {
+    padding: 40px 20px;
+  }
+
+  .logo-text-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .left h1 {
+    text-align: center;
+  }
+
+  .left img {
+    max-width: 300px;
+  }
+
+  .form-container {
+    max-width: 100%;
+  }
+
+  .icon-top img {
+    width: 120px;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  .container {
+    border-radius: 15px;
+  }
+
+  .left h1 {
+    font-size: 1.5rem;
+  }
+
+  .form-container h2 {
+    font-size: 1.6rem;
+  }
+
+  .form-container h2 span {
+    font-size: 1.2rem;
+  }
+
+  .btn {
+    padding: 12px;
+  }
+
+  .left,
+  .right {
+    padding: 30px 20px;
+  }
+
+  .logo-text-container {
+    gap: 10px;
+  }
+
+  .left .logo img {
+    width: 70px;
+  }
+}
+
+.container {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
