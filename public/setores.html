@@ -43,6 +43,9 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
         const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
+        let usuarioFaculdadeId = null;
+        let tipoUsuarioGlobal = "Aluno";
+
         function mostrarAviso(mensagem, tipo = "erro") {
             Toastify({
                 text: mensagem,
@@ -53,9 +56,26 @@
             }).showToast();
         }
 
+        // Função responsável por buscar e renderizar os setores
+        async function carregarSetores() {
+            try {
+                const { data: setores, error: setorError } = await _supabase
+                    .from('setores')
+                    .select('*')
+                    .eq('faculdade_id', usuarioFaculdadeId)
+                    .order('letra', { ascending: true });
+
+                if (setorError) throw setorError;
+
+                renderizarSetores(setores, tipoUsuarioGlobal);
+            } catch (err) {
+                console.error("Erro ao recarregar setores:", err);
+            }
+        }
+
         async function init() {
             const email = localStorage.getItem("emailUsuario");
-            const tipoUsuario = localStorage.getItem("tipoUsuario") || "Aluno";
+            tipoUsuarioGlobal = localStorage.getItem("tipoUsuario") || "Aluno";
 
             if (!email) {
                 window.location.href = "index.html";
@@ -63,25 +83,37 @@
             }
 
             try {
-                // 1. Busca a faculdade do usuário logado usando o e-mail (CORRIGIDO)
-               // Procure estas linhas e garanta que fiquem exatamente assim:
-                  const { data: usuario, error: userError } = await _supabase
+                // 1. Busca a faculdade do usuário logado
+                const { data: usuario, error: userError } = await _supabase
                     .from('usuarios')
                     .select('faculdade_id')
-                    .eq('email', email) // Aqui deve ser 'email', não 'nome'!
+                    .eq('email', email)
                     .single();
+
                 if (userError || !usuario) throw new Error("Erro ao identificar faculdade.");
 
-                // 2. Busca os setores vinculados a essa faculdade
-                const { data: setores, error: setorError } = await _supabase
-                    .from('setores')
-                    .select('*')
-                    .eq('faculdade_id', usuario.faculdade_id)
-                    .order('letra', { ascending: true });
+                usuarioFaculdadeId = usuario.faculdade_id;
 
-                if (setorError) throw setorError;
+                // 2. Busca e exibe os setores na tela pela primeira vez
+                await carregarSetores();
 
-                renderizarSetores(setores, tipoUsuario);
+                // 3. ESCUTA MUDANÇAS EM TEMPO REAL (REALTIME)
+                _supabase
+                    .channel('mudancas-setores')
+                    .on(
+                        'postgres_changes',
+                        {
+                            event: 'UPDATE',
+                            schema: 'public',
+                            table: 'setores',
+                            filter: `faculdade_id=eq.${usuarioFaculdadeId}`
+                        },
+                        (payload) => {
+                            console.log("Atualização detectada via ESP32:", payload);
+                            carregarSetores(); // Atualiza os números na tela instantaneamente
+                        }
+                    )
+                    .subscribe();
 
             } catch (err) {
                 console.error(err);
@@ -109,7 +141,6 @@
 
                 const isBlocked = setor.acesso_restrito && tipoUsuario === "Aluno";
                 
-                // Ajuste para lidar com características como texto ou array (CORRIGIDO)
                 let listaCaracteristicas = [];
                 if (setor.caracteristicas) {
                     listaCaracteristicas = Array.isArray(setor.caracteristicas) 
