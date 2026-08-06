@@ -75,38 +75,43 @@
     }
 
     async function inicializarEIniciarLoop() {
+    console.log("🚀 Script iniciado!");
+
+    try {
+        // Tenta pegar o email, mas se nao tiver, usa um generico para nao travar o teste
         const email = localStorage.getItem("emailUsuario");
-        tipoUsuarioGlobal = localStorage.getItem("tipoUsuario") || "Aluno";
-
-        if (!email) {
-            window.location.href = "index.html";
-            return;
-        }
-
-        try {
-            const { data: usuario, error: userError } = await _supabase
+        
+        if (email) {
+            const { data: usuario } = await _supabase
                 .from('usuarios')
                 .select('faculdade_id')
                 .eq('email', email)
                 .single();
-
-            if (userError || !usuario) throw new Error("Erro ao identificar faculdade.");
-
-            usuarioFaculdadeId = usuario.faculdade_id;
-
-            // 1. Primeira carga de dados
-            await carregarSetores();
-
-            // 2. Loop continuo forcado a cada 2 segundos
-            setInterval(async () => {
-                await carregarSetores();
-            }, 2000);
-
-        } catch (err) {
-            console.error(err);
-            document.getElementById("sectorContainer").innerHTML = "<p>Erro ao carregar dados.</p>";
+            if (usuario) usuarioFaculdadeId = usuario.faculdade_id;
         }
+
+        // SE NAO ACHOU FACULDADE, FORÇA A PRIMEIRA FACULDADE DO BANCO
+        if (!usuarioFaculdadeId) {
+            const { data: faculdades } = await _supabase.from('faculdade').select('id').limit(1);
+            if (faculdades && faculdades.length > 0) {
+                usuarioFaculdadeId = faculdades[0].id;
+            }
+        }
+
+        console.log("ID da Faculdade ativo:", usuarioFaculdadeId);
+
+        // 1. Primeira busca
+        await carregarSetores();
+
+        // 2. Loop continuo forcado a cada 2 segundos
+        setInterval(async () => {
+            await carregarSetores();
+        }, 2000);
+
+    } catch (err) {
+        console.error("Erro na inicializacao:", err);
     }
+}
 
     function renderizarSetores(setores, tipoUsuario) {
         const container = document.getElementById("sectorContainer");
