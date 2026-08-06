@@ -36,135 +36,138 @@
     </main>
 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <script>
-        const supabaseUrl = 'https://csaqfeivvtmtjlnwuxql.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
-        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        let usuarioFaculdadeId = null;
-        let tipoUsuarioGlobal = "Aluno";
+<script>
+    const supabaseUrl = 'https://csaqfeivvtmtjlnwuxql.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYXFmZWl2dnRtdGpsbnd1eHFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNTE4MTMsImV4cCI6MjA5MzgyNzgxM30.kBm3IARUdM_9PxDOAejc3Svg0d21ya0jiF-dpje5eOE';
+    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        function mostrarAviso(mensagem, tipo = "erro") {
-            Toastify({
-                text: mensagem,
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                style: { background: tipo === "erro" ? "#e74c3c" : "#4a148c", borderRadius: "8px" },
-            }).showToast();
+    let usuarioFaculdadeId = null;
+    let tipoUsuarioGlobal = "Aluno";
+
+    function mostrarAviso(mensagem, tipo = "erro") {
+        Toastify({
+            text: mensagem,
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            style: { background: tipo === "erro" ? "#e74c3c" : "#4a148c", borderRadius: "8px" },
+        }).showToast();
+    }
+
+    async function carregarSetores() {
+        if (!usuarioFaculdadeId) return;
+        try {
+            const { data: setores, error: setorError } = await _supabase
+                .from('setores')
+                .select('*')
+                .eq('faculdade_id', usuarioFaculdadeId)
+                .order('letra', { ascending: true });
+
+            if (setorError) throw setorError;
+
+            console.log("🔄 Dados atualizados do Supabase:", new Date().toLocaleTimeString());
+            renderizarSetores(setores, tipoUsuarioGlobal);
+        } catch (err) {
+            console.error("Erro ao buscar setores:", err);
+        }
+    }
+
+    async function inicializarEIniciarLoop() {
+        const email = localStorage.getItem("emailUsuario");
+        tipoUsuarioGlobal = localStorage.getItem("tipoUsuario") || "Aluno";
+
+        if (!email) {
+            window.location.href = "index.html";
+            return;
         }
 
-        async function carregarSetores() {
-            if (!usuarioFaculdadeId) return;
-            try {
-                const { data: setores, error: setorError } = await _supabase
-                    .from('setores')
-                    .select('*')
-                    .eq('faculdade_id', usuarioFaculdadeId)
-                    .order('letra', { ascending: true });
+        try {
+            const { data: usuario, error: userError } = await _supabase
+                .from('usuarios')
+                .select('faculdade_id')
+                .eq('email', email)
+                .single();
 
-                if (setorError) throw setorError;
+            if (userError || !usuario) throw new Error("Erro ao identificar faculdade.");
 
-                renderizarSetores(setores, tipoUsuarioGlobal);
-            } catch (err) {
-                console.error("Erro ao carregar setores:", err);
-            }
-        }
+            usuarioFaculdadeId = usuario.faculdade_id;
 
-        async function init() {
-            const email = localStorage.getItem("emailUsuario");
-            tipoUsuarioGlobal = localStorage.getItem("tipoUsuario") || "Aluno";
+            // 1. Primeira carga de dados
+            await carregarSetores();
 
-            if (!email) {
-                window.location.href = "index.html";
-                return;
-            }
-
-            try {
-                // 1. Busca a faculdade do usuário logado
-                const { data: usuario, error: userError } = await _supabase
-                    .from('usuarios')
-                    .select('faculdade_id')
-                    .eq('email', email)
-                    .single();
-
-                if (userError || !usuario) throw new Error("Erro ao identificar faculdade.");
-
-                usuarioFaculdadeId = usuario.faculdade_id;
-
-                // 2. Busca e exibe os setores na tela
+            // 2. Loop continuo forcado a cada 2 segundos
+            setInterval(async () => {
                 await carregarSetores();
+            }, 2000);
 
-                // 3. ATUALIZAÇÃO EM TEMPO REAL GARANTIDA (A cada 2 segundos)
-                setInterval(() => {
-                    carregarSetores();
-                }, 2000);
+        } catch (err) {
+            console.error(err);
+            document.getElementById("sectorContainer").innerHTML = "<p>Erro ao carregar dados.</p>";
+        }
+    }
 
-            } catch (err) {
-                console.error(err);
-                document.getElementById("sectorContainer").innerHTML = "<p>Erro ao carregar dados.</p>";
-            }
+    function renderizarSetores(setores, tipoUsuario) {
+        const container = document.getElementById("sectorContainer");
+        if (!container) return;
+        
+        container.innerHTML = "";
+
+        if (setores.length === 0) {
+            container.innerHTML = "<p>Nenhum setor cadastrado para sua instituição.</p>";
+            return;
         }
 
-        function renderizarSetores(setores, tipoUsuario) {
-            const container = document.getElementById("sectorContainer");
-            container.innerHTML = "";
+        setores.forEach(setor => {
+            const vagasDisponiveis = setor.vagas_totais - setor.vagas_ocupadas;
+            const porcentagem = (vagasDisponiveis / setor.vagas_totais) * 100;
+            
+            let corVagas = "#e74c3c"; 
+            if (porcentagem > 50) corVagas = "#27ae60"; 
+            else if (porcentagem > 15) corVagas = "#f1c40f"; 
 
-            if (setores.length === 0) {
-                container.innerHTML = "<p>Nenhum setor cadastrado para sua instituição.</p>";
-                return;
+            const isBlocked = setor.acesso_restrito && tipoUsuario === "Aluno";
+            
+            let listaCaracteristicas = [];
+            if (setor.caracteristicas) {
+                listaCaracteristicas = Array.isArray(setor.caracteristicas) 
+                    ? setor.caracteristicas 
+                    : [setor.caracteristicas];
             }
 
-            setores.forEach(setor => {
-                const vagasDisponiveis = setor.vagas_totais - setor.vagas_ocupadas;
-                const porcentagem = (vagasDisponiveis / setor.vagas_totais) * 100;
-                
-                let corVagas = "#e74c3c"; 
-                if (porcentagem > 50) corVagas = "#27ae60"; 
-                else if (porcentagem > 15) corVagas = "#f1c40f"; 
+            const card = document.createElement("div");
+            card.className = "sector-option";
+            if (isBlocked) {
+                card.style.opacity = "0.5";
+                card.style.cursor = "not-allowed";
+            }
 
-                const isBlocked = setor.acesso_restrito && tipoUsuario === "Aluno";
+            card.innerHTML = `
+                <div class="sector-letter" style="--sector-color: ${setor.cor || '#333'}">${setor.letra}</div>
+                <strong>${setor.nome} ${setor.letra}</strong>
+                <p><span style="color: ${corVagas}; font-weight: bold;">${vagasDisponiveis}</span> vagas disponíveis</p>
                 
-                let listaCaracteristicas = [];
-                if (setor.caracteristicas) {
-                    listaCaracteristicas = Array.isArray(setor.caracteristicas) 
-                        ? setor.caracteristicas 
-                        : [setor.caracteristicas];
-                }
+                <div class="sector-info-overlay">
+                    <h4>Detalhes do Setor</h4>
+                    <ul>
+                        ${listaCaracteristicas.map(c => `<li><i class="fa-solid fa-circle-info"></i> ${c}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
 
-                const card = document.createElement("div");
-                card.className = "sector-option";
+            card.onclick = () => {
                 if (isBlocked) {
-                    card.style.opacity = "0.5";
-                    card.style.cursor = "not-allowed";
+                    mostrarAviso(`⚠️ O ${setor.nome} é exclusivo para Colaboradores.`, "erro");
                 }
+            };
 
-                card.innerHTML = `
-                    <div class="sector-letter" style="--sector-color: ${setor.cor || '#333'}">${setor.letra}</div>
-                    <strong>${setor.nome} ${setor.letra}</strong>
-                    <p><span style="color: ${corVagas}; font-weight: bold;">${vagasDisponiveis}</span> vagas disponíveis</p>
-                    
-                    <div class="sector-info-overlay">
-                        <h4>Detalhes do Setor</h4>
-                        <ul>
-                            ${listaCaracteristicas.map(c => `<li><i class="fa-solid fa-circle-info"></i> ${c}</li>`).join('')}
-                        </ul>
-                    </div>
-                `;
+            container.appendChild(card);
+        });
+    }
 
-                card.onclick = () => {
-                    if (isBlocked) {
-                        mostrarAviso(`⚠️ O ${setor.nome} é exclusivo para Colaboradores.`, "erro");
-                    }
-                };
-
-                container.appendChild(card);
-            });
-        }
-
-        document.addEventListener("DOMContentLoaded", init);
-    </script>
+    // Disparo imediato
+    inicializarEIniciarLoop();
+</script>
 </body>
 </html>
