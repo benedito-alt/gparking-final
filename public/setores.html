@@ -97,23 +97,24 @@
                 // 2. Busca e exibe os setores na tela pela primeira vez
                 await carregarSetores();
 
-                // 3. ESCUTA MUDANÇAS EM TEMPO REAL (REALTIME)
+                // 3. ESCUTA MUDANÇAS EM TEMPO REAL (Geral para a tabela setores)
                 _supabase
-                    .channel('mudancas-setores')
+                    .channel('schema-db-changes')
                     .on(
                         'postgres_changes',
                         {
                             event: 'UPDATE',
                             schema: 'public',
-                            table: 'setores',
-                            filter: `faculdade_id=eq.${usuarioFaculdadeId}`
+                            table: 'setores'
                         },
                         (payload) => {
-                            console.log("Atualização detectada via ESP32:", payload);
-                            carregarSetores(); // Atualiza os números na tela instantaneamente
+                            console.log("🔥 Mudança detectada no Supabase:", payload);
+                            carregarSetores(); // Recarrega os cards na tela na hora!
                         }
                     )
-                    .subscribe();
+                    .subscribe((status) => {
+                        console.log("Status da conexão Realtime:", status);
+                    });
 
             } catch (err) {
                 console.error(err);
