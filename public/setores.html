@@ -35,7 +35,7 @@
         </section>
     </main>
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
@@ -56,8 +56,8 @@
             }).showToast();
         }
 
-        // Função responsável por buscar e renderizar os setores
         async function carregarSetores() {
+            if (!usuarioFaculdadeId) return;
             try {
                 const { data: setores, error: setorError } = await _supabase
                     .from('setores')
@@ -69,7 +69,7 @@
 
                 renderizarSetores(setores, tipoUsuarioGlobal);
             } catch (err) {
-                console.error("Erro ao recarregar setores:", err);
+                console.error("Erro ao carregar setores:", err);
             }
         }
 
@@ -94,27 +94,13 @@
 
                 usuarioFaculdadeId = usuario.faculdade_id;
 
-                // 2. Busca e exibe os setores na tela pela primeira vez
+                // 2. Busca e exibe os setores na tela
                 await carregarSetores();
 
-                // 3. ESCUTA MUDANÇAS EM TEMPO REAL (Geral para a tabela setores)
-                _supabase
-                    .channel('schema-db-changes')
-                    .on(
-                        'postgres_changes',
-                        {
-                            event: 'UPDATE',
-                            schema: 'public',
-                            table: 'setores'
-                        },
-                        (payload) => {
-                            console.log("🔥 Mudança detectada no Supabase:", payload);
-                            carregarSetores(); // Recarrega os cards na tela na hora!
-                        }
-                    )
-                    .subscribe((status) => {
-                        console.log("Status da conexão Realtime:", status);
-                    });
+                // 3. ATUALIZAÇÃO EM TEMPO REAL GARANTIDA (A cada 2 segundos)
+                setInterval(() => {
+                    carregarSetores();
+                }, 2000);
 
             } catch (err) {
                 console.error(err);
@@ -135,7 +121,6 @@
                 const vagasDisponiveis = setor.vagas_totais - setor.vagas_ocupadas;
                 const porcentagem = (vagasDisponiveis / setor.vagas_totais) * 100;
                 
-                // Lógica de cores baseada na ocupação
                 let corVagas = "#e74c3c"; 
                 if (porcentagem > 50) corVagas = "#27ae60"; 
                 else if (porcentagem > 15) corVagas = "#f1c40f"; 
